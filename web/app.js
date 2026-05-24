@@ -826,7 +826,7 @@ const KG_COMMUNITY_PALETTE = [
 const SOURCE_RELIABILITY_SCORE = { A: 100, B: 80, C: 60, D: 40, E: 20, F: 0 };
 const INFO_CREDIBILITY_SCORE = { 1: 100, 2: 80, 3: 60, 4: 40, 5: 20, 6: 0 };
 
-let locale = "zh";
+let locale = "en";
 let lastResult = null;
 let loadingTimer = null;
 const HISTORY_LIMIT = 10;
@@ -864,7 +864,7 @@ const Storage = {
       v: STORAGE_VERSION,
       updated_at: new Date().toISOString(),
       theme: "violet",
-      locale: "zh",
+      locale: "en",
       history: [],
     };
     if (prior && typeof prior === "object") {
