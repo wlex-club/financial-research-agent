@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TraceMind · 研迹</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <button type="button" id="mobile-sidebar-toggle" class="mobile-sidebar-toggle" aria-label="打开侧边栏" aria-controls="primary-sidebar" aria-expanded="false">
+    <span class="mobile-toggle-bar" aria-hidden="true"></span>
+    <span class="mobile-toggle-bar" aria-hidden="true"></span>
+    <span class="mobile-toggle-bar" aria-hidden="true"></span>
+  </button>
+  <div id="mobile-sidebar-scrim" class="mobile-sidebar-scrim" aria-hidden="true"></div>
+
+  <div class="app">
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="primary-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">T</div>
+        <div>
+          <div class="brand-name">TraceMind · 研迹</div>
+          <div class="brand-sub" data-i18n="caption">投研决策 · 证据协议 · 可审计</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-label" data-i18n="lang_label">语言</div>
+        <div class="lang-toggle" role="group">
+          <button class="lang-btn active" data-lang="zh">中文</button>
+          <button class="lang-btn" data-lang="en">English</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-label" data-i18n="theme_label">主题色</div>
+        <div class="theme-toggle" role="group">
+          <button class="theme-btn active" data-theme="violet" data-i18n="theme_violet">深海紫</button>
+          <button class="theme-btn" data-theme="aurum" data-i18n="theme_aurum">曜石金</button>
+          <button class="theme-btn" data-theme="light" data-i18n="theme_light">浅色</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-label" data-i18n="params">研究参数</div>
+        <label class="field-label" data-i18n="company">目标公司</label>
+        <input id="company" class="field-input" type="text" />
+        <label class="field-label" data-i18n="question">研究问题</label>
+        <textarea id="question" class="field-textarea" rows="4"></textarea>
+        <div class="preset-row">
+          <button class="preset-btn" type="button" data-preset="market" data-i18n="preset_market">真实行情</button>
+        </div>
+        <button id="run-btn" class="btn-primary">
+          <span class="btn-text" data-i18n="run">开始尽调</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+        <button id="clear-btn" class="btn-ghost" data-i18n="clear">清除结果</button>
+      </div>
+
+      <div class="sidebar-note">
+        <div class="note-title" data-i18n="trace_title">可追溯设计</div>
+        <ul class="note-list">
+          <li data-i18n="trace_1">每步展示思考 → 工具 → 观察</li>
+          <li data-i18n="trace_2">每条结论绑定 source_id + 双轴评级</li>
+          <li data-i18n="trace_3">竞争假设 · 规则审计 · 实体关系</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="main">
+      <header class="main-header">
+        <div>
+          <h1 class="page-title">
+            <span class="title-latin">TraceMind</span>
+            <span class="title-dot">·</span>
+            <span class="title-cjk">研迹</span>
+          </h1>
+          <p class="page-sub" data-i18n="subtitle">可审计的金融研究 Agent · 每个结论可追溯到原始文档 · 0 幻觉</p>
+        </div>
+        <div class="header-actions">
+          <span id="mode-badge" class="badge badge-live">
+            <span class="badge-dot"></span>
+            <span id="mode-text">Live</span>
+          </span>
+          <button id="share-btn" class="btn-outline hidden" data-i18n="share">分享链接</button>
+          <button id="pdf-btn" class="btn-outline hidden" data-i18n="export_pdf">导出 PDF</button>
+          <button id="report-btn" class="btn-outline hidden" data-i18n="export_report">导出报告</button>
+          <button id="export-btn" class="btn-outline hidden" data-i18n="export">导出 JSON</button>
+        </div>
+      </header>
+
+      <!-- Trust + Decision Hero (populated after research) -->
+      <section id="hero-deck" class="hero-deck hidden"></section>
+
+      <!-- Mini data-viz strip (financials / risk / sources) -->
+      <section id="viz-strip" class="viz-strip hidden"></section>
+
+      <!-- Metrics -->
+      <div class="metrics">
+        <div class="metric" id="metric-steps">
+          <div class="metric-val">—</div>
+          <div class="metric-lbl" data-i18n="metric_steps">推理步骤</div>
+        </div>
+        <div class="metric" id="metric-citations">
+          <div class="metric-val">—</div>
+          <div class="metric-lbl" data-i18n="metric_citations">引用依据</div>
+        </div>
+        <div class="metric" id="metric-sources">
+          <div class="metric-val">—</div>
+          <div class="metric-lbl" data-i18n="metric_sources">来源数量</div>
+        </div>
+        <div class="metric" id="metric-audit">
+          <div class="metric-val">—</div>
+          <div class="metric-lbl" data-i18n="metric_audit">审计得分</div>
+        </div>
+        <div class="metric" id="metric-confidence">
+          <div class="metric-val">—</div>
+          <div class="metric-lbl" data-i18n="metric_confidence">置信度</div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </div>
+        <div class="empty-title" data-i18n="empty_title">填写参数，点击开始尽调</div>
+        <div class="empty-body" data-i18n="empty_body">Agent 将展示完整推理链路与引用来源</div>
+        <div id="error-banner" class="error-banner hidden" role="alert" aria-live="assertive"></div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading-state" class="loading-state hidden" role="status" aria-live="polite" aria-atomic="false">
+        <div class="thinking-card">
+          <div class="thinking-head">
+            <div class="thinking-orb"><span></span><span></span><span></span></div>
+            <div class="thinking-head-text">
+              <div class="thinking-title" data-i18n="thinking_title">Agent 正在思考</div>
+              <div class="thinking-sub" id="thinking-status" data-i18n="thinking_sub">规划研究路径 · 调用工具 · 校验证据</div>
+            </div>
+            <div class="thinking-progress">
+              <span id="thinking-step-num">0</span>
+              <span class="thinking-progress-divider">/</span>
+              <span id="thinking-step-total">—</span>
+            </div>
+            <button type="button" id="cancel-btn" class="thinking-cancel-btn" data-i18n-title="cancel_research">
+              <span aria-hidden="true">✕</span>
+              <span class="thinking-cancel-text" data-i18n="cancel_research">取消</span>
+            </button>
+          </div>
+          <div class="thinking-console" id="thinking-console" aria-live="polite"></div>
+          <div class="thinking-bar"><span id="thinking-bar-fill" class="thinking-bar-fill"></span></div>
+          <div class="thinking-hint" data-i18n="thinking_hint">每一步都会写入可回放的推理轨迹</div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="results hidden">
+        <nav class="tabs" role="tablist">
+          <div class="tab-group tab-group-primary">
+            <button class="tab tab-primary active" data-tab="insights" data-i18n="tab_insights">
+              <span class="tab-icon" aria-hidden="true">◎</span>
+              <span class="tab-label">结论决策</span>
+            </button>
+            <button class="tab tab-primary" data-tab="evidence" data-i18n="tab_evidence">
+              <span class="tab-icon" aria-hidden="true">⛓</span>
+              <span class="tab-label">证据全景</span>
+            </button>
+            <button class="tab tab-primary" data-tab="reasoning" data-i18n="tab_reasoning">
+              <span class="tab-icon" aria-hidden="true">⟳</span>
+              <span class="tab-label">推理过程</span>
+            </button>
+            <button class="tab tab-primary" data-tab="graph" data-i18n="tab_graph">
+              <span class="tab-icon" aria-hidden="true">⌬</span>
+              <span class="tab-label">知识图谱</span>
+            </button>
+          </div>
+          <div class="tab-divider" aria-hidden="true"></div>
+          <div class="tab-group tab-group-secondary">
+            <button class="tab tab-secondary" data-tab="history" data-i18n="tab_history">
+              <span class="tab-icon" aria-hidden="true">⏱</span>
+              <span class="tab-label">历史记录</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- Tab 1: 结论决策 -->
+        <div class="tab-panel active" id="panel-insights">
+          <div class="merged-subnav" data-target="insights">
+            <a href="#sec-conclusion" data-i18n="sub_conclusion">研究结论</a>
+            <a href="#sec-decision" data-i18n="sub_decision">投资决策</a>
+            <a href="#sec-sandtable" data-i18n="sub_sandtable">数字沙盘</a>
+            <a href="#sec-results-list" data-i18n="sub_results_list">关键发现</a>
+            <a href="#sec-hypotheses" data-i18n="sub_hypotheses">竞争假设</a>
+          </div>
+          <section class="merged-section" id="sec-conclusion">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_conclusion">研究结论</span></div>
+            <div id="panel-conclusion"></div>
+          </section>
+          <section class="merged-section" id="sec-decision">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_decision">投资决策</span></div>
+            <div id="panel-decision"></div>
+          </section>
+          <section class="merged-section" id="sec-sandtable">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_sandtable">数字沙盘</span></div>
+            <div id="panel-sandtable"></div>
+          </section>
+          <section class="merged-section" id="sec-results-list">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_results_list">关键发现</span></div>
+            <div id="panel-results-list"></div>
+          </section>
+          <section class="merged-section" id="sec-hypotheses">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_hypotheses">竞争假设</span></div>
+            <div id="panel-hypotheses"></div>
+          </section>
+        </div>
+
+        <!-- Tab 2: 证据全景 -->
+        <div class="tab-panel" id="panel-evidence">
+          <div class="merged-subnav" data-target="evidence">
+            <a href="#sec-evidence-chain" data-i18n="sub_evidence_chain">证据链总览</a>
+            <a href="#sec-citations" data-i18n="sub_citations">引用依据</a>
+            <a href="#sec-sources" data-i18n="sub_sources">来源索引</a>
+            <a href="#sec-audit" data-i18n="sub_audit">证据审计</a>
+          </div>
+          <section class="merged-section" id="sec-evidence-chain">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_evidence_chain">证据链总览</span></div>
+            <div id="panel-evidence-chain"></div>
+          </section>
+          <section class="merged-section" id="sec-citations">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_citations">引用依据</span></div>
+            <div id="panel-citations"></div>
+          </section>
+          <section class="merged-section" id="sec-sources">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_sources">来源索引</span></div>
+            <div id="panel-sources"></div>
+          </section>
+          <section class="merged-section" id="sec-audit">
+            <div class="merged-section-head"><span class="merged-section-tag" data-i18n="sub_audit">证据审计</span></div>
+            <div id="panel-audit"></div>
+          </section>
+        </div>
+
+        <!-- Tab 3: 推理过程 -->
+        <div class="tab-panel" id="panel-reasoning">
+          <div id="panel-trace"></div>
+        </div>
+
+        <!-- Tab 4: 知识图谱 -->
+        <div class="tab-panel" id="panel-graph">
+          <div id="panel-entities"></div>
+        </div>
+
+        <!-- Tab 5: 历史 -->
+        <div class="tab-panel" id="panel-history"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/markdown.js"></script>
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>

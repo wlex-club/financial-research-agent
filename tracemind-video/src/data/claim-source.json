@@ -1,0 +1,12 @@
+{
+  "claim": "In Q3 2024, Moutai's net margin reached 53.1%, well above the industry median.",
+  "source": {
+    "id": "S-05",
+    "title": "Kweichow Moutai · Q3 2024 prelim report",
+    "excerpt": "Total revenue for the first nine months reached RMB 123.123 bn, with net profit attributable to shareholders of RMB 60.828 bn — a net margin of about 53.1%."
+  },
+  "matchedSpans": [
+    [40, 45],
+    [60, 75]
+  ]
+}

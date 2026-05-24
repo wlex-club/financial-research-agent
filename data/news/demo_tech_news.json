@@ -1,0 +1,38 @@
+[
+  {
+    "id": "news:demo-tech-001",
+    "company": "演示科技有限公司",
+    "company_en": "Demo Technology Co., Ltd.",
+    "title": "演示科技发布新一代 AI 推理芯片，已获三家头部云厂商试订单",
+    "title_en": "Demo Tech unveils next-gen AI inference chip with trial orders from three major cloud vendors",
+    "summary": "公司宣布新一代推理芯片进入量产前验证阶段，已与三家国内头部云厂商签署试订单。管理层预计 2024 下半年贡献增量收入，但量产良率仍需观察。",
+    "summary_en": "The company said its next inference chip entered pre-mass-production validation and signed trial orders with three leading domestic cloud vendors. Management expects incremental revenue in H2 2024, but yield rates still need monitoring.",
+    "published_at": "2024-03-12",
+    "sentiment": "positive",
+    "url": "https://example.com/news/demo-tech-chip-2024"
+  },
+  {
+    "id": "news:demo-tech-002",
+    "company": "演示科技有限公司",
+    "company_en": "Demo Technology Co., Ltd.",
+    "title": "监管问询：演示科技需补充披露前五大客户收入占比",
+    "title_en": "Regulatory inquiry: Demo Tech asked to disclose top-five customer revenue mix",
+    "summary": "交易所对公司 2023 年报发出问询函，要求补充披露前五大客户收入占比、应收账款账龄及回款情况。公司回应称将在规定期限内回复。",
+    "summary_en": "The exchange issued an inquiry on the 2023 annual report, requesting disclosure of top-five customer revenue share, receivables aging, and collection status. The company said it will respond within the required timeline.",
+    "published_at": "2024-04-02",
+    "sentiment": "negative",
+    "url": "https://example.com/news/demo-tech-inquiry-2024"
+  },
+  {
+    "id": "news:demo-tech-003",
+    "company": "演示科技有限公司",
+    "company_en": "Demo Technology Co., Ltd.",
+    "title": "演示科技研发投入同比增 18%，继续加码大模型基础设施",
+    "title_en": "Demo Tech R&D spend up 18% YoY as it expands LLM infrastructure",
+    "summary": "2023 年研发费用 8.002 亿元，同比增长 18%。公司表示资金主要用于训练集群扩容与推理优化，短期仍可能压制利润率。",
+    "summary_en": "2023 R&D expense reached 800.2M CNY, up 18% YoY. The company said spending focused on training cluster expansion and inference optimization, which may pressure margins near term.",
+    "published_at": "2024-03-28",
+    "sentiment": "neutral",
+    "url": "https://example.com/news/demo-tech-rd-2024"
+  }
+]

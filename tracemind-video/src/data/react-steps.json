@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "thought",
+    "text": "First, surface Kweichow Moutai's latest quarterly profit line items.",
+    "tool": null
+  },
+  {
+    "kind": "tool",
+    "text": "fetch_market_data(company=\"600519.SH\", scope=\"financials\")",
+    "tool": "fetch_market_data"
+  },
+  {
+    "kind": "observation",
+    "text": "Q3 revenue +14.4% YoY, net margin 53.1%, cash flow stable.",
+    "tool": null
+  },
+  {
+    "kind": "thought",
+    "text": "Compare against liquor peers to test margin quality.",
+    "tool": null
+  },
+  {
+    "kind": "tool",
+    "text": "peer_benchmark(industry=\"liquor\", metric=\"net_margin\")",
+    "tool": "peer_benchmark"
+  },
+  {
+    "kind": "observation",
+    "text": "Peer median 31.8% — Moutai runs ~21 pts above the mid.",
+    "tool": null
+  }
+]

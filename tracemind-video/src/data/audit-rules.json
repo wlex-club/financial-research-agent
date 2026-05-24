@@ -1,0 +1,6 @@
+[
+  { "id": "evidence_sufficiency", "label": "evidence_sufficiency", "status": "ok" },
+  { "id": "counter_evidence", "label": "counter_evidence", "status": "ok" },
+  { "id": "source_ids", "label": "source_ids", "status": "ok" },
+  { "id": "confidence_calibration", "label": "confidence_calibration", "status": "warn" }
+]

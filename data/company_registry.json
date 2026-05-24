@@ -1,0 +1,77 @@
+{
+  "演示科技": {
+    "stock_code": null,
+    "aliases": ["演示科技有限公司", "Demo Technology", "demo tech"]
+  },
+  "贵州茅台": {
+    "stock_code": "600519",
+    "aliases": ["Kweichow Moutai", "Moutai"]
+  },
+  "比亚迪": {
+    "stock_code": "002594",
+    "aliases": ["BYD"]
+  },
+  "宁德时代": {
+    "stock_code": "300750",
+    "aliases": ["CATL"]
+  },
+  "中芯国际": {
+    "stock_code": "688981",
+    "aliases": ["SMIC"]
+  },
+  "寒武纪": {
+    "stock_code": "688256",
+    "aliases": ["Cambricon"]
+  },
+  "招商银行": {
+    "stock_code": "600036",
+    "aliases": ["China Merchants Bank", "CMB", "招行"]
+  },
+  "中国平安": {
+    "stock_code": "601318",
+    "aliases": ["Ping An", "Ping An Insurance"]
+  },
+  "五粮液": {
+    "stock_code": "000858",
+    "aliases": ["Wuliangye"]
+  },
+  "立讯精密": {
+    "stock_code": "002475",
+    "aliases": ["Luxshare", "Luxshare Precision"]
+  },
+  "腾讯控股": {
+    "stock_code": null,
+    "market": "hk",
+    "aliases": ["Tencent", "腾讯"]
+  },
+  "阿里巴巴": {
+    "stock_code": null,
+    "market": "us",
+    "aliases": ["Alibaba", "BABA", "阿里"]
+  },
+  "京东": {
+    "stock_code": null,
+    "market": "us",
+    "aliases": ["JD.com", "JD"]
+  },
+  "英伟达": {
+    "stock_code": null,
+    "market": "us",
+    "aliases": ["NVIDIA", "Nvidia", "NVDA"]
+  },
+  "特斯拉": {
+    "stock_code": null,
+    "market": "us",
+    "aliases": ["Tesla", "TSLA"]
+  },
+  "苹果": {
+    "stock_code": null,
+    "market": "us",
+    "aliases": ["Apple", "AAPL"]
+  },
+  "微软": {
+    "stock_code": null,
+    "market": "us",
+    "aliases": ["Microsoft", "MSFT"]
+  }
+}

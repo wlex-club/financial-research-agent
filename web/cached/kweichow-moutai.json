@@ -1,0 +1,457 @@
+{
+  "company": "贵州茅台",
+  "question": "近期基本面、渠道库存与提价空间如何？主要风险点是什么？",
+  "conclusion": "对 **贵州茅台**（白酒消费）的尽调显示：2023 年营收 147,693,000,000 元、归母净利润 74,734,000,000 元，研发投入 156,000,000 元；毛利率 91.96% · ROE 34.2%。\n\n**多头逻辑**：直销结构性优化 · 提价后毛利兑现。\n**风险关注**：一批价回落、渠道库存周转放缓（参考 渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压）。\n\n建议跟踪指标：飞天一批价 · i 茅台 GMV · 经销商库存周转。",
+  "steps": [
+    {
+      "step_number": 1,
+      "thought": "先获取 贵州茅台 最新年报，建立财务基线。",
+      "action": "fetch_financial_report",
+      "action_input": {
+        "company_name": "贵州茅台"
+      },
+      "observation": "{\"revenue\": \"147,693,000,000\", \"net_profit\": \"74,734,000,000\", \"rd_expense\": \"156,000,000\", \"total_assets\": \"252,690,000,000\", \"total_liabilities\": \"52,180,000,000\"}",
+      "sources": [
+        {
+          "source_id": "report:kweichow-moutai-2023",
+          "source_type": "financial_report",
+          "title": "贵州茅台 2023 年年度报告",
+          "excerpt": "贵州茅台 2023 年年度报告\n行业: 白酒消费\n\n一、营业总收入: 147,693,000,000\n二、归属母公司净利润: 74,734,000,000\n三、研发费用: 156,000,000\n四、资产总计: 252,690,000,000\n五、负债合计: 52,180,000,000\n\n关键指标摘要: 毛利率 91.96% · ROE 34.2%",
+          "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600519",
+          "page": null
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "thought": "检索 贵州茅台 近期新闻，识别经营与监管风险信号。",
+      "action": "search_news",
+      "action_input": {
+        "company_name": "贵州茅台",
+        "query": "风险 监管 订单"
+      },
+      "observation": "[{\"title\": \"茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元\", \"sentiment\": \"positive\"}, {\"title\": \"渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压\", \"sentiment\": \"negative\"}, {\"title\": \"茅台提价 20% 后，公司表态以稳定为主，2024 出厂价暂不调整\", \"sentiment\": \"neutral\"}]",
+      "sources": [
+        {
+          "source_id": "news:moutai-2024-001",
+          "source_type": "news",
+          "title": "茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元",
+          "excerpt": "公司公布 2023 年直销渠道收入占比提升至 45%，i 茅台 APP 全年 GMV 约 223 亿元，单瓶毛利显著优于经销商。",
+          "url": "https://www.moutaichina.com/maotaigufen/2023ndbg/index.html",
+          "page": null
+        },
+        {
+          "source_id": "news:moutai-2024-002",
+          "source_type": "news",
+          "title": "渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压",
+          "excerpt": "经销商反馈春节后一批价回落至 2,600 元区间，临近 2,500 元的渠道心理位，库存周转环比走弱。",
+          "url": "https://data.eastmoney.com/notices/stock/600519.html",
+          "page": null
+        },
+        {
+          "source_id": "news:moutai-2024-003",
+          "source_type": "news",
+          "title": "茅台提价 20% 后，公司表态以稳定为主，2024 出厂价暂不调整",
+          "excerpt": "管理层在业绩会重申本轮 20% 提价后将以稳量为主，渠道库存目标控制在 1 个月以内。",
+          "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600519",
+          "page": null
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "thought": "结合行业知识库梳理多空逻辑与监控指标。",
+      "action": "knowledge_query",
+      "action_input": {
+        "query": "近期基本面、渠道库存与提价空间如何？主要风险点是什么？"
+      },
+      "observation": "[{\"chunk_id\": \"kb:kweichow-moutai-thesis\", \"text\": \"贵州茅台 处于 白酒消费。核心多空逻辑：\\n多头：直销结构性优化 · 提价后毛利兑现\\n风险：一批价回落、渠道库存周转放缓\\n主要客户/渠道：i 茅台, 经销商体系, 团购客户\\n需要持续跟踪：飞天一批价, i 茅台 GMV, 经销商库存周转\"}]",
+      "sources": [
+        {
+          "source_id": "kb:kweichow-moutai-thesis",
+          "source_type": "knowledge",
+          "title": "贵州茅台 多空逻辑摘要",
+          "excerpt": "贵州茅台 处于 白酒消费。核心多空逻辑：\n多头：直销结构性优化 · 提价后毛利兑现\n风险：一批价回落、渠道库存周转放缓\n主要客户/渠道：i 茅台, 经销商体系, 团购客户\n需要持续跟踪：飞天一批价, i 茅台 GMV, 经销商库存周转",
+          "url": null,
+          "page": null
+        }
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "claim": "贵州茅台 2023 年营业总收入约 147,693,000,000 元，归母净利润约 74,734,000,000 元。",
+      "source_ids": [
+        "report:kweichow-moutai-2023"
+      ]
+    },
+    {
+      "claim": "研发投入 156,000,000 元，毛利率 91.96% · ROE 34.2%。",
+      "source_ids": [
+        "report:kweichow-moutai-2023"
+      ]
+    },
+    {
+      "claim": "主要风险信号：渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压。",
+      "source_ids": [
+        "news:moutai-2024-002"
+      ]
+    },
+    {
+      "claim": "积极催化：茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元。",
+      "source_ids": [
+        "news:moutai-2024-001"
+      ]
+    }
+  ],
+  "all_sources": [
+    {
+      "source_id": "report:kweichow-moutai-2023",
+      "source_type": "financial_report",
+      "title": "贵州茅台 2023 年年度报告",
+      "excerpt": "贵州茅台 2023 年年度报告\n行业: 白酒消费\n\n一、营业总收入: 147,693,000,000\n二、归属母公司净利润: 74,734,000,000\n三、研发费用: 156,000,000\n四、资产总计: 252,690,000,000\n五、负债合计: 52,180,000,000\n\n关键指标摘要: 毛利率 91.96% · ROE 34.2%",
+      "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600519",
+      "page": null
+    },
+    {
+      "source_id": "news:moutai-2024-001",
+      "source_type": "news",
+      "title": "茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元",
+      "excerpt": "公司公布 2023 年直销渠道收入占比提升至 45%，i 茅台 APP 全年 GMV 约 223 亿元，单瓶毛利显著优于经销商。",
+      "url": "https://www.moutaichina.com/maotaigufen/2023ndbg/index.html",
+      "page": null
+    },
+    {
+      "source_id": "news:moutai-2024-002",
+      "source_type": "news",
+      "title": "渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压",
+      "excerpt": "经销商反馈春节后一批价回落至 2,600 元区间，临近 2,500 元的渠道心理位，库存周转环比走弱。",
+      "url": "https://data.eastmoney.com/notices/stock/600519.html",
+      "page": null
+    },
+    {
+      "source_id": "news:moutai-2024-003",
+      "source_type": "news",
+      "title": "茅台提价 20% 后，公司表态以稳定为主，2024 出厂价暂不调整",
+      "excerpt": "管理层在业绩会重申本轮 20% 提价后将以稳量为主，渠道库存目标控制在 1 个月以内。",
+      "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600519",
+      "page": null
+    },
+    {
+      "source_id": "kb:kweichow-moutai-thesis",
+      "source_type": "knowledge",
+      "title": "贵州茅台 多空逻辑摘要",
+      "excerpt": "贵州茅台 处于 白酒消费。核心多空逻辑：\n多头：直销结构性优化 · 提价后毛利兑现\n风险：一批价回落、渠道库存周转放缓\n主要客户/渠道：i 茅台, 经销商体系, 团购客户\n需要持续跟踪：飞天一批价, i 茅台 GMV, 经销商库存周转",
+      "url": null,
+      "page": null
+    }
+  ],
+  "mode": "cached",
+  "locale": "zh",
+  "protocol": {
+    "protocol_version": "1.0",
+    "conclusion": "对 **贵州茅台**（白酒消费）的尽调显示：2023 年营收 147,693,000,000 元、归母净利润 74,734,000,000 元，研发投入 156,000,000 元；毛利率 91.96% · ROE 34.2%。\n\n**多头逻辑**：直销结构性优化 · 提价后毛利兑现。\n**风险关注**：一批价回落、渠道库存周转放缓（参考 渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压）。\n\n建议跟踪指标：飞天一批价 · i 茅台 GMV · 经销商库存周转。",
+    "confidence": "high",
+    "evidence_items": [
+      {
+        "source_id": "report:kweichow-moutai-2023",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "2",
+        "excerpt": "贵州茅台 2023 年年度报告\n行业: 白酒消费\n\n一、营业总收入: 147,693,000,000\n二、归属母公司净利润: 74,734,000,000\n三、研发费用: 156,000,000\n四、资产总计: 252,690,000,000\n五、负债合计: 52,180,000,000\n\n关键指标摘要: 毛利率 91.96% · ROE 34.2%",
+        "claim": "贵州茅台 2023 年营业总收入约 147,693,000,000 元，归母净利润约 74,734,000,000 元。"
+      },
+      {
+        "source_id": "report:kweichow-moutai-2023",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "2",
+        "excerpt": "贵州茅台 2023 年年度报告\n行业: 白酒消费\n\n一、营业总收入: 147,693,000,000\n二、归属母公司净利润: 74,734,000,000\n三、研发费用: 156,000,000\n四、资产总计: 252,690,000,000\n五、负债合计: 52,180,000,000\n\n关键指标摘要: 毛利率 91.96% · ROE 34.2%",
+        "claim": "研发投入 156,000,000 元，毛利率 91.96% · ROE 34.2%。"
+      },
+      {
+        "source_id": "news:moutai-2024-002",
+        "relation": "contradicting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "经销商反馈春节后一批价回落至 2,600 元区间，临近 2,500 元的渠道心理位，库存周转环比走弱。",
+        "claim": "主要风险信号：渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压。"
+      },
+      {
+        "source_id": "news:moutai-2024-001",
+        "relation": "supporting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "公司公布 2023 年直销渠道收入占比提升至 45%，i 茅台 APP 全年 GMV 约 223 亿元，单瓶毛利显著优于经销商。",
+        "claim": "积极催化：茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元。"
+      },
+      {
+        "source_id": "news:moutai-2024-003",
+        "relation": "supporting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "管理层在业绩会重申本轮 20% 提价后将以稳量为主，渠道库存目标控制在 1 个月以内。",
+        "claim": ""
+      },
+      {
+        "source_id": "kb:kweichow-moutai-thesis",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "3",
+        "excerpt": "贵州茅台 处于 白酒消费。核心多空逻辑：\n多头：直销结构性优化 · 提价后毛利兑现\n风险：一批价回落、渠道库存周转放缓\n主要客户/渠道：i 茅台, 经销商体系, 团购客户\n需要持续跟踪：飞天一批价, i 茅台 GMV, 经销商库存周转",
+        "claim": ""
+      }
+    ],
+    "competing_hypotheses": [
+      {
+        "hypothesis_id": "h-main",
+        "statement": "基本面整体稳健，营收与研发投入具备支撑。",
+        "confidence": "medium",
+        "supporting_source_ids": [
+          "report:kweichow-moutai-2023"
+        ]
+      },
+      {
+        "hypothesis_id": "h-alt",
+        "statement": "监管问询与客户集中度可能带来短期风险压力。",
+        "confidence": "medium",
+        "supporting_source_ids": [
+          "news:moutai-2024-001",
+          "news:moutai-2024-002",
+          "news:moutai-2024-003"
+        ]
+      }
+    ],
+    "financial_metrics": [
+      {
+        "metric_id": "revenue",
+        "value": 147693000000.0,
+        "unit": "CNY",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "net_profit",
+        "value": 74734000000.0,
+        "unit": "CNY",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "rd_expense",
+        "value": 156000000.0,
+        "unit": "CNY",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "total_assets",
+        "value": 252690000000.0,
+        "unit": "CNY",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "total_liabilities",
+        "value": 52180000000.0,
+        "unit": "CNY",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "net_margin",
+        "value": 50.6,
+        "unit": "percent",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": "net_profit / revenue"
+      },
+      {
+        "metric_id": "rd_expense_ratio",
+        "value": 0.11,
+        "unit": "percent",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": "rd_expense / revenue"
+      },
+      {
+        "metric_id": "debt_to_asset_ratio",
+        "value": 20.65,
+        "unit": "percent",
+        "source_id": "report:kweichow-moutai-2023",
+        "formula": "total_liabilities / total_assets"
+      }
+    ],
+    "risk_signals": [
+      {
+        "risk_id": "customer_concentration",
+        "severity": "medium",
+        "score": 0.62,
+        "source_ids": [
+          "kb:kweichow-moutai-thesis"
+        ]
+      },
+      {
+        "risk_id": "margin_pressure",
+        "severity": "medium",
+        "score": 0.55,
+        "source_ids": [
+          "report:kweichow-moutai-2023"
+        ]
+      }
+    ],
+    "investment_decision": {
+      "rating": "positive",
+      "confidence": "high",
+      "rationale": "盈利能力与研发投入提供基本面支撑，但监管问询、客户集中度与量产良率仍需跟踪。",
+      "monitoring_indicators": [
+        "前五大客户收入占比",
+        "应收账款账龄与回款",
+        "量产良率",
+        "研发投入对利润率的压制"
+      ],
+      "source_ids": [
+        "kb:kweichow-moutai-thesis",
+        "report:kweichow-moutai-2023"
+      ]
+    },
+    "industry_benchmarks": [
+      {
+        "company_id": "target",
+        "name": "贵州茅台",
+        "revenue_billion": 1476.93,
+        "net_margin": 50.6,
+        "rd_ratio": 0.11,
+        "debt_to_asset_ratio": 20.65,
+        "note": "目标公司"
+      },
+      {
+        "company_id": "peer-cloud",
+        "name": "CloudInfra Peer A",
+        "revenue_billion": 156.4,
+        "net_margin": 10.8,
+        "rd_ratio": 5.6,
+        "debt_to_asset_ratio": 48.2,
+        "note": "规模更大，研发费用率较低"
+      },
+      {
+        "company_id": "peer-chip",
+        "name": "AIChip Peer B",
+        "revenue_billion": 72.1,
+        "net_margin": 8.9,
+        "rd_ratio": 14.5,
+        "debt_to_asset_ratio": 36.7,
+        "note": "研发强度更高"
+      },
+      {
+        "company_id": "peer-software",
+        "name": "InfraSoftware Peer C",
+        "revenue_billion": 88.6,
+        "net_margin": 18.4,
+        "rd_ratio": 9.2,
+        "debt_to_asset_ratio": 28.9,
+        "note": "利润率较高，资产较轻"
+      }
+    ],
+    "entities": [
+      {
+        "entity_id": "entity:company",
+        "name": "贵州茅台",
+        "entity_type": "company",
+        "source_ids": [
+          "report:kweichow-moutai-2023"
+        ]
+      },
+      {
+        "entity_id": "entity:cloud_customer",
+        "name": "云厂商客户",
+        "entity_type": "customer",
+        "source_ids": [
+          "news:moutai-2024-001"
+        ]
+      },
+      {
+        "entity_id": "entity:regulator",
+        "name": "监管问询",
+        "entity_type": "event",
+        "source_ids": [
+          "news:moutai-2024-002"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from_entity_id": "entity:cloud_customer",
+        "to_entity_id": "entity:company",
+        "relation_type": "trial_order",
+        "source_id": "news:moutai-2024-001",
+        "label": "试订单合作"
+      },
+      {
+        "from_entity_id": "entity:regulator",
+        "to_entity_id": "entity:company",
+        "relation_type": "regulatory_risk",
+        "source_id": "news:moutai-2024-002",
+        "label": "引发监管关注"
+      }
+    ],
+    "audit": {
+      "passed": true,
+      "score": 1.0,
+      "issues": []
+    },
+    "faithfulness": {
+      "score": 0.5,
+      "passed": false,
+      "total_claims": 4,
+      "grounded_claims": 2,
+      "ungrounded_claims": [
+        "主要风险信号：渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压。",
+        "积极催化：茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元。"
+      ],
+      "claim_details": [
+        {
+          "claim": "贵州茅台 2023 年营业总收入约 147,693,000,000 元，归母净利润约 74,734,000,000 元。",
+          "source_ids": [
+            "report:kweichow-moutai-2023"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 10/12"
+        },
+        {
+          "claim": "研发投入 156,000,000 元，毛利率 91.96% · ROE 34.2%。",
+          "source_ids": [
+            "report:kweichow-moutai-2023"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 7/9"
+        },
+        {
+          "claim": "主要风险信号：渠道调研：飞天 53° 一批价跌至 2,600 元附近，节后回款承压。",
+          "source_ids": [
+            "news:moutai-2024-002"
+          ],
+          "grounded": false,
+          "reason": "数字 53 未在来源中出现"
+        },
+        {
+          "claim": "积极催化：茅台直销渠道占比再创新高，i 茅台 GMV 突破 200 亿元。",
+          "source_ids": [
+            "news:moutai-2024-001"
+          ],
+          "grounded": false,
+          "reason": "数字 200 未在来源中出现"
+        }
+      ]
+    }
+  },
+  "industry": "白酒消费",
+  "industry_en": "Premium baijiu",
+  "headline_metric": "毛利率 91.96% · ROE 34.2%",
+  "data_as_of": "2026-05-22",
+  "source_summary": {
+    "data_mode": "cached_sample",
+    "financials": "public annual-report style disclosures",
+    "news": "company IR, exchange filings, official announcement portals, and authoritative news references",
+    "generated_by": "scripts/build_cached_results.py"
+  },
+  "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+}

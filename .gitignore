@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.DS_Store
+.streamlit/
+
+# SQLite runtime files
+data/*.sqlite
+data/*.db
+
+# tracemind-video heavy deps
+tracemind-video/node_modules/
+tracemind-video/out/

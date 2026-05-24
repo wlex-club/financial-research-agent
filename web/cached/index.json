@@ -1,0 +1,69 @@
+{
+  "companies": [
+    {
+      "slug": "kweichow-moutai",
+      "company": "贵州茅台",
+      "company_en": "Kweichow Moutai",
+      "industry": "白酒消费",
+      "industry_en": "Premium baijiu",
+      "headline_metric": "毛利率 91.96% · ROE 34.2%",
+      "headline_metric_en": "Gross 91.96% · ROE 34.2%",
+      "question": "近期基本面、渠道库存与提价空间如何？主要风险点是什么？",
+      "question_en": "How are fundamentals, channel inventory and pricing power? Key risks?",
+      "data_as_of": "2026-05-22",
+      "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+    },
+    {
+      "slug": "catl",
+      "company": "宁德时代",
+      "company_en": "CATL",
+      "industry": "动力电池 / 储能",
+      "industry_en": "EV & ESS batteries",
+      "headline_metric": "全球动力电池份额 36.8% · 储能份额 40%+",
+      "headline_metric_en": "Global EV battery share 36.8% · ESS share 40%+",
+      "question": "海外份额、储能新增长与碳酸锂周期对盈利的影响如何评估？",
+      "question_en": "How do overseas share gains, ESS growth and lithium-price cycle affect earnings?",
+      "data_as_of": "2026-05-22",
+      "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+    },
+    {
+      "slug": "nvidia",
+      "company": "英伟达",
+      "company_en": "NVIDIA",
+      "industry": "加速计算 / AI 芯片",
+      "industry_en": "Accelerated computing / AI silicon",
+      "headline_metric": "DC 收入 YoY +217% · 毛利率 73%",
+      "headline_metric_en": "DC revenue YoY +217% · GM 73%",
+      "question": "数据中心订单可见度、CoWoS 产能与中美出口管制对增长的影响？",
+      "question_en": "DC backlog visibility, CoWoS capacity, and impact of US export controls?",
+      "data_as_of": "2026-05-22",
+      "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+    },
+    {
+      "slug": "byd",
+      "company": "比亚迪",
+      "company_en": "BYD",
+      "industry": "新能源汽车 / 电池",
+      "industry_en": "EV & batteries",
+      "headline_metric": "2023 全年销量 302 万辆 · 海外 24 万辆",
+      "headline_metric_en": "2023 sales 3.02M units · overseas 0.24M",
+      "question": "出海节奏、新车周期与价格战中盈利底线如何？",
+      "question_en": "Overseas ramp, new model cycle, and margin floor amid the price war?",
+      "data_as_of": "2026-05-22",
+      "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+    },
+    {
+      "slug": "cmb",
+      "company": "招商银行",
+      "company_en": "China Merchants Bank",
+      "industry": "股份制银行 / 财富管理",
+      "industry_en": "Joint-stock bank / wealth management",
+      "headline_metric": "ROE 16.22% · 不良率 0.95% · CET1 13.7%",
+      "headline_metric_en": "ROE 16.22% · NPL 0.95% · CET1 13.7%",
+      "question": "净息差、零售房贷质量与中收复苏节奏如何？",
+      "question_en": "NIM trend, retail mortgage quality, and fee-income recovery cadence?",
+      "data_as_of": "2026-05-22",
+      "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+    }
+  ]
+}

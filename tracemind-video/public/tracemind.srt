@@ -1,0 +1,47 @@
+1
+00:00:00,000 --> 00:00:03,867
+In financial research, the hard part isn't writing the report.
+
+2
+00:00:05,133 --> 00:00:07,400
+It's making every line stand up to scrutiny.
+
+3
+00:00:08,933 --> 00:00:09,700
+TraceMind.
+
+4
+00:00:11,533 --> 00:00:17,867
+It turns investment research into an auditable chain — every thought, every tool call—
+
+5
+00:00:18,933 --> 00:00:20,767
+—every conclusion bound to a source.
+
+6
+00:00:22,467 --> 00:00:26,533
+You see the main thesis. You also see the alternative.
+
+7
+00:00:28,067 --> 00:00:30,867
+You see where the audit rules stop the model from overreaching.
+
+8
+00:00:32,400 --> 00:00:35,167
+Every citation is checked against the source it came from.
+
+9
+00:00:36,767 --> 00:00:45,300
+Risk is layered. The decision card delivers a clear rating, a confidence, and indicators to track.
+
+10
+00:00:46,833 --> 00:00:53,633
+The knowledge graph connects companies, customers, and regulators into one navigable network.
+
+11
+00:00:55,167 --> 00:00:57,400
+Follow-up questions build on prior evidence — no starting from scratch.
+
+12
+00:00:58,400 --> 00:01:10,400
+Research is no longer a black box. It's a path you can walk back. TraceMind. Every judgment, traceable.

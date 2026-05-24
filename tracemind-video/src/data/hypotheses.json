@@ -1,0 +1,12 @@
+{
+  "main": {
+    "label": "Main thesis",
+    "claim": "Premium mix and disciplined channel pricing sustain long-term net margin.",
+    "sources": ["S-02", "S-05", "S-09"]
+  },
+  "alternative": {
+    "label": "Alternative",
+    "claim": "Consumer downtrade and channel destocking may cap 2026 volume growth.",
+    "sources": ["S-07", "S-11"]
+  }
+}

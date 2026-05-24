@@ -1,0 +1,465 @@
+{
+  "company": "招商银行",
+  "question": "净息差、零售房贷质量与中收复苏节奏如何？",
+  "conclusion": "对 **招商银行**（股份制银行 / 财富管理）的尽调显示：2023 年营收 339,123,000,000 元、归母净利润 146,602,000,000 元，研发投入 14,127,000,000 元；ROE 16.22% · 不良率 0.95% · CET1 13.7%。\n\n**多头逻辑**：财富管理护城河 · 分红比例提升 · 不良控制行业领先。\n**风险关注**：净息差收窄 · 零售房贷需求疲弱 · 城投化债扰动（参考 净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长）。\n\n建议跟踪指标：季度净息差 · 私行 AUM 增速 · 零售贷款不良率 · 中收同比。",
+  "steps": [
+    {
+      "step_number": 1,
+      "thought": "先获取 招商银行 最新年报，建立财务基线。",
+      "action": "fetch_financial_report",
+      "action_input": {
+        "company_name": "招商银行"
+      },
+      "observation": "{\"revenue\": \"339,123,000,000\", \"net_profit\": \"146,602,000,000\", \"rd_expense\": \"14,127,000,000\", \"total_assets\": \"11,028,400,000,000\", \"total_liabilities\": \"10,026,700,000,000\"}",
+      "sources": [
+        {
+          "source_id": "report:cmb-2023",
+          "source_type": "financial_report",
+          "title": "招商银行 2023 年年度报告",
+          "excerpt": "招商银行 2023 年年度报告\n行业: 股份制银行 / 财富管理\n\n一、营业总收入: 339,123,000,000\n二、归属母公司净利润: 146,602,000,000\n三、研发费用: 14,127,000,000\n四、资产总计: 11,028,400,000,000\n五、负债合计: 10,026,700,000,000\n\n关键指标摘要: ROE 16.22% · 不良率 0.95% · CET1 13.7%",
+          "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600036",
+          "page": null
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "thought": "检索 招商银行 近期新闻，识别经营与监管风险信号。",
+      "action": "search_news",
+      "action_input": {
+        "company_name": "招商银行",
+        "query": "风险 监管 订单"
+      },
+      "observation": "[{\"title\": \"招行私行 AUM 突破 4 万亿元，财富管理客户基础保持行业领先\", \"sentiment\": \"positive\"}, {\"title\": \"净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长\", \"sentiment\": \"negative\"}, {\"title\": \"招行宣布提高分红比例至 35%，强化股东回报\", \"sentiment\": \"neutral\"}]",
+      "sources": [
+        {
+          "source_id": "news:cmb-2024-001",
+          "source_type": "news",
+          "title": "招行私行 AUM 突破 4 万亿元，财富管理客户基础保持行业领先",
+          "excerpt": "公司披露私行 AUM 已突破 4 万亿元，金葵花及以上客户数同比增长 11%，财富管理护城河持续巩固。",
+          "url": "https://www.cmbchina.com/cmbir/Report/AnnualReport.aspx",
+          "page": null
+        },
+        {
+          "source_id": "news:cmb-2024-002",
+          "source_type": "news",
+          "title": "净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长",
+          "excerpt": "公司 2023 净息差较上年下降 25bp 至 2.15%，零售房贷净增量较 2022 显著回落，存量按揭利率下调也带来重定价压力。",
+          "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600036",
+          "page": null
+        },
+        {
+          "source_id": "news:cmb-2024-003",
+          "source_type": "news",
+          "title": "招行宣布提高分红比例至 35%，强化股东回报",
+          "excerpt": "董事会通过 2023 分红方案：每 10 股派发现金 19.72 元，对应分红比例 35%，较 2022 提升 2pct。",
+          "url": "https://www.cmbchina.com/cmbir/Report/AnnualReport.aspx",
+          "page": null
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "thought": "结合行业知识库梳理多空逻辑与监控指标。",
+      "action": "knowledge_query",
+      "action_input": {
+        "query": "净息差、零售房贷质量与中收复苏节奏如何？"
+      },
+      "observation": "[{\"chunk_id\": \"kb:cmb-thesis\", \"text\": \"招商银行 处于 股份制银行 / 财富管理。核心多空逻辑：\\n多头：财富管理护城河 · 分红比例提升 · 不良控制行业领先\\n风险：净息差收窄 · 零售房贷需求疲弱 · 城投化债扰动\\n主要客户/渠道：金葵花 / 钻石客户, 私行客户, 中小企业, 供应链核心企业\\n需要持续跟踪：季度净息差, 私行 AUM 增速, 零售贷款不良率, 中收同比\"}]",
+      "sources": [
+        {
+          "source_id": "kb:cmb-thesis",
+          "source_type": "knowledge",
+          "title": "招商银行 多空逻辑摘要",
+          "excerpt": "招商银行 处于 股份制银行 / 财富管理。核心多空逻辑：\n多头：财富管理护城河 · 分红比例提升 · 不良控制行业领先\n风险：净息差收窄 · 零售房贷需求疲弱 · 城投化债扰动\n主要客户/渠道：金葵花 / 钻石客户, 私行客户, 中小企业, 供应链核心企业\n需要持续跟踪：季度净息差, 私行 AUM 增速, 零售贷款不良率, 中收同比",
+          "url": null,
+          "page": null
+        }
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "claim": "招商银行 2023 年营业总收入约 339,123,000,000 元，归母净利润约 146,602,000,000 元。",
+      "source_ids": [
+        "report:cmb-2023"
+      ]
+    },
+    {
+      "claim": "研发投入 14,127,000,000 元，ROE 16.22% · 不良率 0.95% · CET1 13.7%。",
+      "source_ids": [
+        "report:cmb-2023"
+      ]
+    },
+    {
+      "claim": "主要风险信号：净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长。",
+      "source_ids": [
+        "news:cmb-2024-002"
+      ]
+    },
+    {
+      "claim": "积极催化：招行私行 AUM 突破 4 万亿元，财富管理客户基础保持行业领先。",
+      "source_ids": [
+        "news:cmb-2024-001"
+      ]
+    }
+  ],
+  "all_sources": [
+    {
+      "source_id": "report:cmb-2023",
+      "source_type": "financial_report",
+      "title": "招商银行 2023 年年度报告",
+      "excerpt": "招商银行 2023 年年度报告\n行业: 股份制银行 / 财富管理\n\n一、营业总收入: 339,123,000,000\n二、归属母公司净利润: 146,602,000,000\n三、研发费用: 14,127,000,000\n四、资产总计: 11,028,400,000,000\n五、负债合计: 10,026,700,000,000\n\n关键指标摘要: ROE 16.22% · 不良率 0.95% · CET1 13.7%",
+      "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600036",
+      "page": null
+    },
+    {
+      "source_id": "news:cmb-2024-001",
+      "source_type": "news",
+      "title": "招行私行 AUM 突破 4 万亿元，财富管理客户基础保持行业领先",
+      "excerpt": "公司披露私行 AUM 已突破 4 万亿元，金葵花及以上客户数同比增长 11%，财富管理护城河持续巩固。",
+      "url": "https://www.cmbchina.com/cmbir/Report/AnnualReport.aspx",
+      "page": null
+    },
+    {
+      "source_id": "news:cmb-2024-002",
+      "source_type": "news",
+      "title": "净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长",
+      "excerpt": "公司 2023 净息差较上年下降 25bp 至 2.15%，零售房贷净增量较 2022 显著回落，存量按揭利率下调也带来重定价压力。",
+      "url": "https://www.sse.com.cn/assortment/stock/list/info/announcement/index.shtml?productId=600036",
+      "page": null
+    },
+    {
+      "source_id": "news:cmb-2024-003",
+      "source_type": "news",
+      "title": "招行宣布提高分红比例至 35%，强化股东回报",
+      "excerpt": "董事会通过 2023 分红方案：每 10 股派发现金 19.72 元，对应分红比例 35%，较 2022 提升 2pct。",
+      "url": "https://www.cmbchina.com/cmbir/Report/AnnualReport.aspx",
+      "page": null
+    },
+    {
+      "source_id": "kb:cmb-thesis",
+      "source_type": "knowledge",
+      "title": "招商银行 多空逻辑摘要",
+      "excerpt": "招商银行 处于 股份制银行 / 财富管理。核心多空逻辑：\n多头：财富管理护城河 · 分红比例提升 · 不良控制行业领先\n风险：净息差收窄 · 零售房贷需求疲弱 · 城投化债扰动\n主要客户/渠道：金葵花 / 钻石客户, 私行客户, 中小企业, 供应链核心企业\n需要持续跟踪：季度净息差, 私行 AUM 增速, 零售贷款不良率, 中收同比",
+      "url": null,
+      "page": null
+    }
+  ],
+  "mode": "cached",
+  "locale": "zh",
+  "protocol": {
+    "protocol_version": "1.0",
+    "conclusion": "对 **招商银行**（股份制银行 / 财富管理）的尽调显示：2023 年营收 339,123,000,000 元、归母净利润 146,602,000,000 元，研发投入 14,127,000,000 元；ROE 16.22% · 不良率 0.95% · CET1 13.7%。\n\n**多头逻辑**：财富管理护城河 · 分红比例提升 · 不良控制行业领先。\n**风险关注**：净息差收窄 · 零售房贷需求疲弱 · 城投化债扰动（参考 净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长）。\n\n建议跟踪指标：季度净息差 · 私行 AUM 增速 · 零售贷款不良率 · 中收同比。",
+    "confidence": "high",
+    "evidence_items": [
+      {
+        "source_id": "report:cmb-2023",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "2",
+        "excerpt": "招商银行 2023 年年度报告\n行业: 股份制银行 / 财富管理\n\n一、营业总收入: 339,123,000,000\n二、归属母公司净利润: 146,602,000,000\n三、研发费用: 14,127,000,000\n四、资产总计: 11,028,400,000,000\n五、负债合计: 10,026,700,000,000\n\n关键指标摘要: ROE 16.22% · 不良率 0.95% · CET1 13.7%",
+        "claim": "招商银行 2023 年营业总收入约 339,123,000,000 元，归母净利润约 146,602,000,000 元。"
+      },
+      {
+        "source_id": "report:cmb-2023",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "2",
+        "excerpt": "招商银行 2023 年年度报告\n行业: 股份制银行 / 财富管理\n\n一、营业总收入: 339,123,000,000\n二、归属母公司净利润: 146,602,000,000\n三、研发费用: 14,127,000,000\n四、资产总计: 11,028,400,000,000\n五、负债合计: 10,026,700,000,000\n\n关键指标摘要: ROE 16.22% · 不良率 0.95% · CET1 13.7%",
+        "claim": "研发投入 14,127,000,000 元，ROE 16.22% · 不良率 0.95% · CET1 13.7%。"
+      },
+      {
+        "source_id": "news:cmb-2024-002",
+        "relation": "contradicting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "公司 2023 净息差较上年下降 25bp 至 2.15%，零售房贷净增量较 2022 显著回落，存量按揭利率下调也带来重定价压力。",
+        "claim": "主要风险信号：净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长。"
+      },
+      {
+        "source_id": "news:cmb-2024-001",
+        "relation": "supporting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "公司披露私行 AUM 已突破 4 万亿元，金葵花及以上客户数同比增长 11%，财富管理护城河持续巩固。",
+        "claim": "积极催化：招行私行 AUM 突破 4 万亿元，财富管理客户基础保持行业领先。"
+      },
+      {
+        "source_id": "news:cmb-2024-003",
+        "relation": "supporting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "董事会通过 2023 分红方案：每 10 股派发现金 19.72 元，对应分红比例 35%，较 2022 提升 2pct。",
+        "claim": ""
+      },
+      {
+        "source_id": "kb:cmb-thesis",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "3",
+        "excerpt": "招商银行 处于 股份制银行 / 财富管理。核心多空逻辑：\n多头：财富管理护城河 · 分红比例提升 · 不良控制行业领先\n风险：净息差收窄 · 零售房贷需求疲弱 · 城投化债扰动\n主要客户/渠道：金葵花 / 钻石客户, 私行客户, 中小企业, 供应链核心企业\n需要持续跟踪：季度净息差, 私行 AUM 增速, 零售贷款不良率, 中收同比",
+        "claim": ""
+      }
+    ],
+    "competing_hypotheses": [
+      {
+        "hypothesis_id": "h-main",
+        "statement": "基本面整体稳健，营收与研发投入具备支撑。",
+        "confidence": "medium",
+        "supporting_source_ids": [
+          "report:cmb-2023"
+        ]
+      },
+      {
+        "hypothesis_id": "h-alt",
+        "statement": "监管问询与客户集中度可能带来短期风险压力。",
+        "confidence": "medium",
+        "supporting_source_ids": [
+          "news:cmb-2024-001",
+          "news:cmb-2024-002",
+          "news:cmb-2024-003"
+        ]
+      }
+    ],
+    "financial_metrics": [
+      {
+        "metric_id": "revenue",
+        "value": 339123000000.0,
+        "unit": "CNY",
+        "source_id": "report:cmb-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "net_profit",
+        "value": 146602000000.0,
+        "unit": "CNY",
+        "source_id": "report:cmb-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "rd_expense",
+        "value": 14127000000.0,
+        "unit": "CNY",
+        "source_id": "report:cmb-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "total_assets",
+        "value": 11028400000000.0,
+        "unit": "CNY",
+        "source_id": "report:cmb-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "total_liabilities",
+        "value": 10026700000000.0,
+        "unit": "CNY",
+        "source_id": "report:cmb-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "net_margin",
+        "value": 43.23,
+        "unit": "percent",
+        "source_id": "report:cmb-2023",
+        "formula": "net_profit / revenue"
+      },
+      {
+        "metric_id": "rd_expense_ratio",
+        "value": 4.17,
+        "unit": "percent",
+        "source_id": "report:cmb-2023",
+        "formula": "rd_expense / revenue"
+      },
+      {
+        "metric_id": "debt_to_asset_ratio",
+        "value": 90.92,
+        "unit": "percent",
+        "source_id": "report:cmb-2023",
+        "formula": "total_liabilities / total_assets"
+      }
+    ],
+    "risk_signals": [
+      {
+        "risk_id": "customer_concentration",
+        "severity": "medium",
+        "score": 0.62,
+        "source_ids": [
+          "news:cmb-2024-001",
+          "kb:cmb-thesis"
+        ]
+      },
+      {
+        "risk_id": "commercialization_yield",
+        "severity": "medium",
+        "score": 0.58,
+        "source_ids": [
+          "report:cmb-2023",
+          "kb:cmb-thesis"
+        ]
+      },
+      {
+        "risk_id": "margin_pressure",
+        "severity": "medium",
+        "score": 0.55,
+        "source_ids": [
+          "report:cmb-2023"
+        ]
+      }
+    ],
+    "investment_decision": {
+      "rating": "cautious",
+      "confidence": "medium",
+      "rationale": "盈利能力与研发投入提供基本面支撑，但监管问询、客户集中度与量产良率仍需跟踪。",
+      "monitoring_indicators": [
+        "前五大客户收入占比",
+        "应收账款账龄与回款",
+        "量产良率",
+        "研发投入对利润率的压制"
+      ],
+      "source_ids": [
+        "kb:cmb-thesis",
+        "news:cmb-2024-001",
+        "report:cmb-2023"
+      ]
+    },
+    "industry_benchmarks": [
+      {
+        "company_id": "target",
+        "name": "招商银行",
+        "revenue_billion": 3391.23,
+        "net_margin": 43.23,
+        "rd_ratio": 4.17,
+        "debt_to_asset_ratio": 90.92,
+        "note": "目标公司"
+      },
+      {
+        "company_id": "peer-cloud",
+        "name": "CloudInfra Peer A",
+        "revenue_billion": 156.4,
+        "net_margin": 10.8,
+        "rd_ratio": 5.6,
+        "debt_to_asset_ratio": 48.2,
+        "note": "规模更大，研发费用率较低"
+      },
+      {
+        "company_id": "peer-chip",
+        "name": "AIChip Peer B",
+        "revenue_billion": 72.1,
+        "net_margin": 8.9,
+        "rd_ratio": 14.5,
+        "debt_to_asset_ratio": 36.7,
+        "note": "研发强度更高"
+      },
+      {
+        "company_id": "peer-software",
+        "name": "InfraSoftware Peer C",
+        "revenue_billion": 88.6,
+        "net_margin": 18.4,
+        "rd_ratio": 9.2,
+        "debt_to_asset_ratio": 28.9,
+        "note": "利润率较高，资产较轻"
+      }
+    ],
+    "entities": [
+      {
+        "entity_id": "entity:company",
+        "name": "招商银行",
+        "entity_type": "company",
+        "source_ids": [
+          "report:cmb-2023"
+        ]
+      },
+      {
+        "entity_id": "entity:cloud_customer",
+        "name": "云厂商客户",
+        "entity_type": "customer",
+        "source_ids": [
+          "news:cmb-2024-001"
+        ]
+      },
+      {
+        "entity_id": "entity:regulator",
+        "name": "监管问询",
+        "entity_type": "event",
+        "source_ids": [
+          "news:cmb-2024-002"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from_entity_id": "entity:cloud_customer",
+        "to_entity_id": "entity:company",
+        "relation_type": "trial_order",
+        "source_id": "news:cmb-2024-001",
+        "label": "试订单合作"
+      },
+      {
+        "from_entity_id": "entity:regulator",
+        "to_entity_id": "entity:company",
+        "relation_type": "regulatory_risk",
+        "source_id": "news:cmb-2024-002",
+        "label": "引发监管关注"
+      }
+    ],
+    "audit": {
+      "passed": true,
+      "score": 1.0,
+      "issues": []
+    },
+    "faithfulness": {
+      "score": 1.0,
+      "passed": true,
+      "total_claims": 4,
+      "grounded_claims": 4,
+      "ungrounded_claims": [],
+      "claim_details": [
+        {
+          "claim": "招商银行 2023 年营业总收入约 339,123,000,000 元，归母净利润约 146,602,000,000 元。",
+          "source_ids": [
+            "report:cmb-2023"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 10/12"
+        },
+        {
+          "claim": "研发投入 14,127,000,000 元，ROE 16.22% · 不良率 0.95% · CET1 13.7%。",
+          "source_ids": [
+            "report:cmb-2023"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 8/10"
+        },
+        {
+          "claim": "主要风险信号：净息差收窄至 2.15%，房贷需求疲弱拖累零售贷款增长。",
+          "source_ids": [
+            "news:cmb-2024-002"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 4/12"
+        },
+        {
+          "claim": "积极催化：招行私行 AUM 突破 4 万亿元，财富管理客户基础保持行业领先。",
+          "source_ids": [
+            "news:cmb-2024-001"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 7/12"
+        }
+      ]
+    }
+  },
+  "industry": "股份制银行 / 财富管理",
+  "industry_en": "Joint-stock bank / wealth management",
+  "headline_metric": "ROE 16.22% · 不良率 0.95% · CET1 13.7%",
+  "data_as_of": "2026-05-22",
+  "source_summary": {
+    "data_mode": "cached_sample",
+    "financials": "public annual-report style disclosures",
+    "news": "company IR, exchange filings, official announcement portals, and authoritative news references",
+    "generated_by": "scripts/build_cached_results.py"
+  },
+  "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+}

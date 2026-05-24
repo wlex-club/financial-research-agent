@@ -1,0 +1,468 @@
+{
+  "company": "宁德时代",
+  "question": "海外份额、储能新增长与碳酸锂周期对盈利的影响如何评估？",
+  "conclusion": "对 **宁德时代**（动力电池 / 储能）的尽调显示：2023 年营收 400,917,000,000 元、归母净利润 44,121,000,000 元，研发投入 18,356,000,000 元；全球动力电池份额 36.8% · 储能份额 40%+。\n\n**多头逻辑**：储能放量 · 4C 神行 PLUS 上量 · 海外定点扩张。\n**风险关注**：碳酸锂周期 · 高价库存去化 · 海外贸易摩擦（参考 碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显）。\n\n建议跟踪指标：碳酸锂均价 · 单瓦时净利 · 储能交付节奏 · 海外产能爬坡。",
+  "steps": [
+    {
+      "step_number": 1,
+      "thought": "先获取 宁德时代 最新年报，建立财务基线。",
+      "action": "fetch_financial_report",
+      "action_input": {
+        "company_name": "宁德时代"
+      },
+      "observation": "{\"revenue\": \"400,917,000,000\", \"net_profit\": \"44,121,000,000\", \"rd_expense\": \"18,356,000,000\", \"total_assets\": \"711,750,000,000\", \"total_liabilities\": \"448,690,000,000\"}",
+      "sources": [
+        {
+          "source_id": "report:catl-2023",
+          "source_type": "financial_report",
+          "title": "宁德时代 2023 年年度报告",
+          "excerpt": "宁德时代 2023 年年度报告\n行业: 动力电池 / 储能\n\n一、营业总收入: 400,917,000,000\n二、归属母公司净利润: 44,121,000,000\n三、研发费用: 18,356,000,000\n四、资产总计: 711,750,000,000\n五、负债合计: 448,690,000,000\n\n关键指标摘要: 全球动力电池份额 36.8% · 储能份额 40%+",
+          "url": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=300750&orgId=9900023737",
+          "page": null
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "thought": "检索 宁德时代 近期新闻，识别经营与监管风险信号。",
+      "action": "search_news",
+      "action_input": {
+        "company_name": "宁德时代",
+        "query": "风险 监管 订单"
+      },
+      "observation": "[{\"title\": \"宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间\", \"sentiment\": \"positive\"}, {\"title\": \"碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显\", \"sentiment\": \"negative\"}, {\"title\": \"宁德时代北美储能订单超 50 GWh，福特、特斯拉为主要客户\", \"sentiment\": \"neutral\"}]",
+      "sources": [
+        {
+          "source_id": "news:catl-2024-001",
+          "source_type": "news",
+          "title": "宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间",
+          "excerpt": "新产品 4C 快充配合 1,000 km 续航，已签订多家头部车企定点，预计 2024H2 起贡献收入。",
+          "url": "https://www.catl.com/en/news/6015.html",
+          "page": null
+        },
+        {
+          "source_id": "news:catl-2024-002",
+          "source_type": "news",
+          "title": "碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显",
+          "excerpt": "碳酸锂价格自高点已下跌超 80%，公司存货周转加速，但 Q4 单瓦时盈利或受高价库存拖累。",
+          "url": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=300750&orgId=9900023737",
+          "page": null
+        },
+        {
+          "source_id": "news:catl-2024-003",
+          "source_type": "news",
+          "title": "宁德时代北美储能订单超 50 GWh，福特、特斯拉为主要客户",
+          "excerpt": "公司披露北美储能在手订单超 50 GWh，2025 年起陆续交付，毛利率高于动力电池业务。",
+          "url": "https://www.catl.com/en/news/",
+          "page": null
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "thought": "结合行业知识库梳理多空逻辑与监控指标。",
+      "action": "knowledge_query",
+      "action_input": {
+        "query": "海外份额、储能新增长与碳酸锂周期对盈利的影响如何评估？"
+      },
+      "observation": "[{\"chunk_id\": \"kb:catl-thesis\", \"text\": \"宁德时代 处于 动力电池 / 储能。核心多空逻辑：\\n多头：储能放量 · 4C 神行 PLUS 上量 · 海外定点扩张\\n风险：碳酸锂周期 · 高价库存去化 · 海外贸易摩擦\\n主要客户/渠道：特斯拉, 宝马, 福特, 比亚迪, 理想\\n需要持续跟踪：碳酸锂均价, 单瓦时净利, 储能交付节奏, 海外产能爬坡\"}]",
+      "sources": [
+        {
+          "source_id": "kb:catl-thesis",
+          "source_type": "knowledge",
+          "title": "宁德时代 多空逻辑摘要",
+          "excerpt": "宁德时代 处于 动力电池 / 储能。核心多空逻辑：\n多头：储能放量 · 4C 神行 PLUS 上量 · 海外定点扩张\n风险：碳酸锂周期 · 高价库存去化 · 海外贸易摩擦\n主要客户/渠道：特斯拉, 宝马, 福特, 比亚迪, 理想\n需要持续跟踪：碳酸锂均价, 单瓦时净利, 储能交付节奏, 海外产能爬坡",
+          "url": null,
+          "page": null
+        }
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "claim": "宁德时代 2023 年营业总收入约 400,917,000,000 元，归母净利润约 44,121,000,000 元。",
+      "source_ids": [
+        "report:catl-2023"
+      ]
+    },
+    {
+      "claim": "研发投入 18,356,000,000 元，全球动力电池份额 36.8% · 储能份额 40%+。",
+      "source_ids": [
+        "report:catl-2023"
+      ]
+    },
+    {
+      "claim": "主要风险信号：碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显。",
+      "source_ids": [
+        "news:catl-2024-002"
+      ]
+    },
+    {
+      "claim": "积极催化：宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间。",
+      "source_ids": [
+        "news:catl-2024-001"
+      ]
+    }
+  ],
+  "all_sources": [
+    {
+      "source_id": "report:catl-2023",
+      "source_type": "financial_report",
+      "title": "宁德时代 2023 年年度报告",
+      "excerpt": "宁德时代 2023 年年度报告\n行业: 动力电池 / 储能\n\n一、营业总收入: 400,917,000,000\n二、归属母公司净利润: 44,121,000,000\n三、研发费用: 18,356,000,000\n四、资产总计: 711,750,000,000\n五、负债合计: 448,690,000,000\n\n关键指标摘要: 全球动力电池份额 36.8% · 储能份额 40%+",
+      "url": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=300750&orgId=9900023737",
+      "page": null
+    },
+    {
+      "source_id": "news:catl-2024-001",
+      "source_type": "news",
+      "title": "宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间",
+      "excerpt": "新产品 4C 快充配合 1,000 km 续航，已签订多家头部车企定点，预计 2024H2 起贡献收入。",
+      "url": "https://www.catl.com/en/news/6015.html",
+      "page": null
+    },
+    {
+      "source_id": "news:catl-2024-002",
+      "source_type": "news",
+      "title": "碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显",
+      "excerpt": "碳酸锂价格自高点已下跌超 80%，公司存货周转加速，但 Q4 单瓦时盈利或受高价库存拖累。",
+      "url": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=300750&orgId=9900023737",
+      "page": null
+    },
+    {
+      "source_id": "news:catl-2024-003",
+      "source_type": "news",
+      "title": "宁德时代北美储能订单超 50 GWh，福特、特斯拉为主要客户",
+      "excerpt": "公司披露北美储能在手订单超 50 GWh，2025 年起陆续交付，毛利率高于动力电池业务。",
+      "url": "https://www.catl.com/en/news/",
+      "page": null
+    },
+    {
+      "source_id": "kb:catl-thesis",
+      "source_type": "knowledge",
+      "title": "宁德时代 多空逻辑摘要",
+      "excerpt": "宁德时代 处于 动力电池 / 储能。核心多空逻辑：\n多头：储能放量 · 4C 神行 PLUS 上量 · 海外定点扩张\n风险：碳酸锂周期 · 高价库存去化 · 海外贸易摩擦\n主要客户/渠道：特斯拉, 宝马, 福特, 比亚迪, 理想\n需要持续跟踪：碳酸锂均价, 单瓦时净利, 储能交付节奏, 海外产能爬坡",
+      "url": null,
+      "page": null
+    }
+  ],
+  "mode": "cached",
+  "locale": "zh",
+  "protocol": {
+    "protocol_version": "1.0",
+    "conclusion": "对 **宁德时代**（动力电池 / 储能）的尽调显示：2023 年营收 400,917,000,000 元、归母净利润 44,121,000,000 元，研发投入 18,356,000,000 元；全球动力电池份额 36.8% · 储能份额 40%+。\n\n**多头逻辑**：储能放量 · 4C 神行 PLUS 上量 · 海外定点扩张。\n**风险关注**：碳酸锂周期 · 高价库存去化 · 海外贸易摩擦（参考 碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显）。\n\n建议跟踪指标：碳酸锂均价 · 单瓦时净利 · 储能交付节奏 · 海外产能爬坡。",
+    "confidence": "high",
+    "evidence_items": [
+      {
+        "source_id": "report:catl-2023",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "2",
+        "excerpt": "宁德时代 2023 年年度报告\n行业: 动力电池 / 储能\n\n一、营业总收入: 400,917,000,000\n二、归属母公司净利润: 44,121,000,000\n三、研发费用: 18,356,000,000\n四、资产总计: 711,750,000,000\n五、负债合计: 448,690,000,000\n\n关键指标摘要: 全球动力电池份额 36.8% · 储能份额 40%+",
+        "claim": "宁德时代 2023 年营业总收入约 400,917,000,000 元，归母净利润约 44,121,000,000 元。"
+      },
+      {
+        "source_id": "report:catl-2023",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "2",
+        "excerpt": "宁德时代 2023 年年度报告\n行业: 动力电池 / 储能\n\n一、营业总收入: 400,917,000,000\n二、归属母公司净利润: 44,121,000,000\n三、研发费用: 18,356,000,000\n四、资产总计: 711,750,000,000\n五、负债合计: 448,690,000,000\n\n关键指标摘要: 全球动力电池份额 36.8% · 储能份额 40%+",
+        "claim": "研发投入 18,356,000,000 元，全球动力电池份额 36.8% · 储能份额 40%+。"
+      },
+      {
+        "source_id": "news:catl-2024-002",
+        "relation": "contradicting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "碳酸锂价格自高点已下跌超 80%，公司存货周转加速，但 Q4 单瓦时盈利或受高价库存拖累。",
+        "claim": "主要风险信号：碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显。"
+      },
+      {
+        "source_id": "news:catl-2024-001",
+        "relation": "supporting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "新产品 4C 快充配合 1,000 km 续航，已签订多家头部车企定点，预计 2024H2 起贡献收入。",
+        "claim": "积极催化：宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间。"
+      },
+      {
+        "source_id": "news:catl-2024-003",
+        "relation": "supporting",
+        "source_reliability": "C",
+        "info_credibility": "3",
+        "excerpt": "公司披露北美储能在手订单超 50 GWh，2025 年起陆续交付，毛利率高于动力电池业务。",
+        "claim": ""
+      },
+      {
+        "source_id": "kb:catl-thesis",
+        "relation": "supporting",
+        "source_reliability": "B",
+        "info_credibility": "3",
+        "excerpt": "宁德时代 处于 动力电池 / 储能。核心多空逻辑：\n多头：储能放量 · 4C 神行 PLUS 上量 · 海外定点扩张\n风险：碳酸锂周期 · 高价库存去化 · 海外贸易摩擦\n主要客户/渠道：特斯拉, 宝马, 福特, 比亚迪, 理想\n需要持续跟踪：碳酸锂均价, 单瓦时净利, 储能交付节奏, 海外产能爬坡",
+        "claim": ""
+      }
+    ],
+    "competing_hypotheses": [
+      {
+        "hypothesis_id": "h-main",
+        "statement": "基本面整体稳健，营收与研发投入具备支撑。",
+        "confidence": "medium",
+        "supporting_source_ids": [
+          "report:catl-2023"
+        ]
+      },
+      {
+        "hypothesis_id": "h-alt",
+        "statement": "监管问询与客户集中度可能带来短期风险压力。",
+        "confidence": "medium",
+        "supporting_source_ids": [
+          "news:catl-2024-001",
+          "news:catl-2024-002",
+          "news:catl-2024-003"
+        ]
+      }
+    ],
+    "financial_metrics": [
+      {
+        "metric_id": "revenue",
+        "value": 400917000000.0,
+        "unit": "CNY",
+        "source_id": "report:catl-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "net_profit",
+        "value": 44121000000.0,
+        "unit": "CNY",
+        "source_id": "report:catl-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "rd_expense",
+        "value": 18356000000.0,
+        "unit": "CNY",
+        "source_id": "report:catl-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "total_assets",
+        "value": 711750000000.0,
+        "unit": "CNY",
+        "source_id": "report:catl-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "total_liabilities",
+        "value": 448690000000.0,
+        "unit": "CNY",
+        "source_id": "report:catl-2023",
+        "formula": ""
+      },
+      {
+        "metric_id": "net_margin",
+        "value": 11.01,
+        "unit": "percent",
+        "source_id": "report:catl-2023",
+        "formula": "net_profit / revenue"
+      },
+      {
+        "metric_id": "rd_expense_ratio",
+        "value": 4.58,
+        "unit": "percent",
+        "source_id": "report:catl-2023",
+        "formula": "rd_expense / revenue"
+      },
+      {
+        "metric_id": "debt_to_asset_ratio",
+        "value": 63.04,
+        "unit": "percent",
+        "source_id": "report:catl-2023",
+        "formula": "total_liabilities / total_assets"
+      }
+    ],
+    "risk_signals": [
+      {
+        "risk_id": "customer_concentration",
+        "severity": "medium",
+        "score": 0.62,
+        "source_ids": [
+          "news:catl-2024-003",
+          "kb:catl-thesis"
+        ]
+      },
+      {
+        "risk_id": "commercialization_yield",
+        "severity": "medium",
+        "score": 0.58,
+        "source_ids": [
+          "news:catl-2024-001"
+        ]
+      },
+      {
+        "risk_id": "margin_pressure",
+        "severity": "medium",
+        "score": 0.55,
+        "source_ids": [
+          "report:catl-2023"
+        ]
+      }
+    ],
+    "investment_decision": {
+      "rating": "cautious",
+      "confidence": "medium",
+      "rationale": "盈利能力与研发投入提供基本面支撑，但监管问询、客户集中度与量产良率仍需跟踪。",
+      "monitoring_indicators": [
+        "前五大客户收入占比",
+        "应收账款账龄与回款",
+        "量产良率",
+        "研发投入对利润率的压制"
+      ],
+      "source_ids": [
+        "kb:catl-thesis",
+        "news:catl-2024-001",
+        "news:catl-2024-003",
+        "report:catl-2023"
+      ]
+    },
+    "industry_benchmarks": [
+      {
+        "company_id": "target",
+        "name": "宁德时代",
+        "revenue_billion": 4009.17,
+        "net_margin": 11.01,
+        "rd_ratio": 4.58,
+        "debt_to_asset_ratio": 63.04,
+        "note": "目标公司"
+      },
+      {
+        "company_id": "peer-cloud",
+        "name": "CloudInfra Peer A",
+        "revenue_billion": 156.4,
+        "net_margin": 10.8,
+        "rd_ratio": 5.6,
+        "debt_to_asset_ratio": 48.2,
+        "note": "规模更大，研发费用率较低"
+      },
+      {
+        "company_id": "peer-chip",
+        "name": "AIChip Peer B",
+        "revenue_billion": 72.1,
+        "net_margin": 8.9,
+        "rd_ratio": 14.5,
+        "debt_to_asset_ratio": 36.7,
+        "note": "研发强度更高"
+      },
+      {
+        "company_id": "peer-software",
+        "name": "InfraSoftware Peer C",
+        "revenue_billion": 88.6,
+        "net_margin": 18.4,
+        "rd_ratio": 9.2,
+        "debt_to_asset_ratio": 28.9,
+        "note": "利润率较高，资产较轻"
+      }
+    ],
+    "entities": [
+      {
+        "entity_id": "entity:company",
+        "name": "宁德时代",
+        "entity_type": "company",
+        "source_ids": [
+          "report:catl-2023"
+        ]
+      },
+      {
+        "entity_id": "entity:cloud_customer",
+        "name": "云厂商客户",
+        "entity_type": "customer",
+        "source_ids": [
+          "news:catl-2024-001"
+        ]
+      },
+      {
+        "entity_id": "entity:regulator",
+        "name": "监管问询",
+        "entity_type": "event",
+        "source_ids": [
+          "news:catl-2024-002"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from_entity_id": "entity:cloud_customer",
+        "to_entity_id": "entity:company",
+        "relation_type": "trial_order",
+        "source_id": "news:catl-2024-001",
+        "label": "试订单合作"
+      },
+      {
+        "from_entity_id": "entity:regulator",
+        "to_entity_id": "entity:company",
+        "relation_type": "regulatory_risk",
+        "source_id": "news:catl-2024-002",
+        "label": "引发监管关注"
+      }
+    ],
+    "audit": {
+      "passed": true,
+      "score": 1.0,
+      "issues": []
+    },
+    "faithfulness": {
+      "score": 0.5,
+      "passed": false,
+      "total_claims": 4,
+      "grounded_claims": 2,
+      "ungrounded_claims": [
+        "主要风险信号：碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显。",
+        "积极催化：宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间。"
+      ],
+      "claim_details": [
+        {
+          "claim": "宁德时代 2023 年营业总收入约 400,917,000,000 元，归母净利润约 44,121,000,000 元。",
+          "source_ids": [
+            "report:catl-2023"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 10/12"
+        },
+        {
+          "claim": "研发投入 18,356,000,000 元，全球动力电池份额 36.8% · 储能份额 40%+。",
+          "source_ids": [
+            "report:catl-2023"
+          ],
+          "grounded": true,
+          "reason": "关键词命中 10/12"
+        },
+        {
+          "claim": "主要风险信号：碳酸锂价格跌破 10 万元/吨，宁德时代去库压力凸显。",
+          "source_ids": [
+            "news:catl-2024-002"
+          ],
+          "grounded": false,
+          "reason": "数字 10 未在来源中出现"
+        },
+        {
+          "claim": "积极催化：宁德时代神行 PLUS 量产，4C 快充 + 1,000 km 续航打开 20 万元车型空间。",
+          "source_ids": [
+            "news:catl-2024-001"
+          ],
+          "grounded": false,
+          "reason": "来源支撑不足 (1/12)"
+        }
+      ]
+    }
+  },
+  "industry": "动力电池 / 储能",
+  "industry_en": "EV & ESS batteries",
+  "headline_metric": "全球动力电池份额 36.8% · 储能份额 40%+",
+  "data_as_of": "2026-05-22",
+  "source_summary": {
+    "data_mode": "cached_sample",
+    "financials": "public annual-report style disclosures",
+    "news": "company IR, exchange filings, official announcement portals, and authoritative news references",
+    "generated_by": "scripts/build_cached_results.py"
+  },
+  "sample_disclaimer": "This is a pre-generated sample for product review. Financial figures are based on public annual-report style disclosures; links point to company IR, exchange filings, or official announcement portals and are not realtime investment advice."
+}

@@ -1,0 +1,1113 @@
+from __future__ import annotations
+
+import asyncio
+import json
+from typing import Any, AsyncGenerator, Dict, List, Optional, Set
+
+from agent.builder import build_protocol_from_result, merge_live_protocol_fields
+from agent.faithfulness import check_faithfulness
+from agent.prompts import get_system_prompt
+from agent.trace import AgentStep, CitedClaim, ResearchResult, SourceRef, SourceType
+from config import get_settings
+from i18n.locale import Locale, normalize_locale, t
+from llm.miromind_client import MiroMindClient, parse_tool_call
+from tools import run_tool
+from tools.market_data import resolve_stock_code
+
+
+class ResearchAgent:
+    def __init__(self) -> None:
+        self.settings = get_settings()
+        self.client = MiroMindClient()
+
+    @staticmethod
+    def _merge_source(store: Dict[str, SourceRef], ref: SourceRef) -> None:
+        existing = store.get(ref.source_id)
+        if existing is None or len(ref.excerpt) > len(existing.excerpt):
+            store[ref.source_id] = ref
+
+    async def run(
+        self,
+        company: str,
+        question: str,
+        locale: str | Locale = Locale.ZH,
+    ) -> ResearchResult:
+        loc = normalize_locale(locale)
+        return self._finalize(await self._run_live(company, question, loc))
+
+    async def run_stream(
+        self,
+        company: str,
+        question: str,
+        locale: str | Locale = Locale.ZH,
+    ) -> AsyncGenerator[Dict[str, Any], None]:
+        """Yield agent reasoning events one at a time for SSE streaming."""
+        loc = normalize_locale(locale)
+        yield {"type": "started", "company": company, "question": question}
+
+        try:
+            async for ev in self._run_live_stream(company, question, loc):
+                yield ev
+            return
+        except RuntimeError as exc:
+            yield {"type": "error", "message": str(exc)}
+            return
+
+    @staticmethod
+    def _refs_from_payload(payload: Dict[str, Any]) -> List[SourceRef]:
+        refs: List[SourceRef] = []
+        for item in payload.get("sources", []):
+            refs.append(
+                SourceRef(
+                    source_id=item["source_id"],
+                    source_type=SourceType(item["source_type"]),
+                    title=item["title"],
+                    excerpt=item["excerpt"],
+                    url=item.get("url"),
+                    page=item.get("page"),
+                )
+            )
+        return refs
+
+    def _live_source_kinds(self, sources: Dict[str, SourceRef]) -> Set[str]:
+        kinds: Set[str] = set()
+        for ref in sources.values():
+            if ref.source_id.startswith(("report:demo-tech", "news:demo-tech", "kb:")):
+                continue
+            if ref.source_type == SourceType.FINANCIAL_REPORT:
+                kinds.add("financials")
+            elif ref.source_type == SourceType.NEWS:
+                kinds.add("announcements")
+            elif ref.source_type == SourceType.MARKET_DATA:
+                kinds.add("market")
+        return kinds
+
+    def _ensure_live_evidence(self, company: str, all_sources: Dict[str, SourceRef]) -> None:
+        kinds = self._live_source_kinds(all_sources)
+        if len(kinds) >= 2:
+            return
+        code = resolve_stock_code(company)
+        hint = f"registered stock code: {code}" if code else "company is not mapped to supported live data"
+        raise RuntimeError(
+            "Live evidence is insufficient; refusing to generate a real-data report "
+            f"with only {len(kinds)} verified source categories ({hint})."
+        )
+
+    def _bootstrap_live_evidence(
+        self,
+        company: str,
+        question: str,
+        locale: Locale,
+        all_sources: Dict[str, SourceRef],
+    ) -> List[AgentStep]:
+        steps: List[AgentStep] = []
+
+        def collect(payload: Dict[str, Any]) -> List[SourceRef]:
+            refs = self._refs_from_payload(payload)
+            for ref in refs:
+                self._merge_source(all_sources, ref)
+            return refs
+
+        stock_code = resolve_stock_code(company)
+        if not stock_code:
+            return steps
+
+        report = run_tool("fetch_financial_report", {"company_name": company}, locale=locale.value)
+        if not report.get("error"):
+            steps.append(
+                AgentStep(
+                    step_number=1,
+                    thought=t("agent.live.bootstrap.financials", locale),
+                    action="fetch_financial_report",
+                    action_input={"company_name": company},
+                    observation=json.dumps(
+                        {
+                            "data_source": report.get("data_source"),
+                            "fetched_at": report.get("fetched_at"),
+                            "highlights": report.get("highlights"),
+                        },
+                        ensure_ascii=False,
+                    ),
+                    sources=collect(report),
+                    data_status=self._data_status(report),
+                )
+            )
+
+        news = run_tool("search_news", {"company_name": company, "query": question}, locale=locale.value)
+        if not news.get("error"):
+            articles = news.get("articles") or []
+            steps.append(
+                AgentStep(
+                    step_number=len(steps) + 1,
+                    thought=t("agent.live.bootstrap.news", locale),
+                    action="search_news",
+                    action_input={"company_name": company, "query": question},
+                    observation=json.dumps(
+                        {
+                            "data_source": news.get("data_source"),
+                            "fetched_at": news.get("fetched_at"),
+                            "articles": [
+                                {"title": a.get("title"), "url": a.get("url")}
+                                for a in articles[:6]
+                            ],
+                        },
+                        ensure_ascii=False,
+                    ),
+                    sources=collect(news),
+                    data_status=self._data_status(news),
+                )
+            )
+
+        quote = run_tool(
+            "fetch_market_data",
+            {"stock_code": stock_code, "action": "quote", "company_name": company},
+            locale=locale.value,
+        )
+        if not quote.get("error"):
+            steps.append(
+                AgentStep(
+                    step_number=len(steps) + 1,
+                    thought=t("agent.live.bootstrap.quote", locale),
+                    action="fetch_market_data",
+                    action_input={"stock_code": stock_code, "action": "quote"},
+                    observation=json.dumps(
+                        {
+                            "data_source": quote.get("data_source"),
+                            "fetched_at": quote.get("fetched_at"),
+                            "stock_name": quote.get("stock_name"),
+                            "current_price": quote.get("current_price"),
+                            "change_percent": quote.get("change_percent"),
+                            "pe_ratio": quote.get("pe_ratio"),
+                            "pb_ratio": quote.get("pb_ratio"),
+                        },
+                        ensure_ascii=False,
+                    ),
+                    sources=collect(quote),
+                    data_status=self._data_status(quote),
+                )
+            )
+
+        return steps
+
+    def _run_deep_search_flywheel(
+        self,
+        company: str,
+        question: str,
+        locale: Locale,
+        all_sources: Dict[str, SourceRef],
+        start_step: int,
+    ) -> List[AgentStep]:
+        """Deterministic retrieval flywheel before the LLM synthesizes.
+
+        The model still reasons, but the evidence pool is forced through
+        risk/counter-evidence, catalyst, and knowledge-validation loops first.
+        """
+        steps: List[AgentStep] = []
+
+        def collect(payload: Dict[str, Any]) -> List[SourceRef]:
+            refs = self._refs_from_payload(payload)
+            for ref in refs:
+                self._merge_source(all_sources, ref)
+            return refs
+
+        loops = [
+            {
+                "thought_key": "agent.live.deep_search.risk",
+                "tool": "search_news",
+                "input": {
+                    "company_name": company,
+                    "query": t(
+                        "agent.live.deep_search.risk_query",
+                        locale,
+                        company=company,
+                        question=question,
+                    ),
+                },
+            },
+            {
+                "thought_key": "agent.live.deep_search.catalyst",
+                "tool": "search_news",
+                "input": {
+                    "company_name": company,
+                    "query": t(
+                        "agent.live.deep_search.catalyst_query",
+                        locale,
+                        company=company,
+                        question=question,
+                    ),
+                },
+            },
+            {
+                "thought_key": "agent.live.deep_search.kb",
+                "tool": "knowledge_query",
+                "input": {
+                    "query": t(
+                        "agent.live.deep_search.kb_query",
+                        locale,
+                        company=company,
+                        question=question,
+                    ),
+                },
+            },
+        ]
+
+        seen_signatures: Set[str] = set()
+        for loop in loops:
+            payload = run_tool(loop["tool"], loop["input"], locale=locale.value)
+            refs = collect(payload)
+            loop_name = loop["thought_key"].rsplit(".", 1)[-1]
+            data_status = self._data_status(payload)
+            data_status["loop"] = f"deep_search:{loop_name}"
+            compact_payload: Dict[str, Any] = {
+                "deep_search_loop": loop_name,
+                "data_status": data_status,
+            }
+            if payload.get("articles"):
+                compact_payload["articles"] = [
+                    {
+                        "title": item.get("title"),
+                        "summary": (item.get("summary") or "")[:180],
+                        "url": item.get("url"),
+                    }
+                    for item in payload.get("articles", [])[:5]
+                ]
+            if payload.get("chunks"):
+                compact_payload["chunks"] = [
+                    {
+                        "chunk_id": item.get("chunk_id"),
+                        "title": item.get("title"),
+                        "text": (item.get("text") or "")[:220],
+                    }
+                    for item in payload.get("chunks", [])[:5]
+                ]
+            signature = json.dumps(compact_payload, ensure_ascii=False, sort_keys=True)
+            if signature in seen_signatures:
+                compact_payload["duplicate_evidence_note"] = "retrieval returned overlapping evidence; kept for audit trail"
+            seen_signatures.add(signature)
+
+            steps.append(
+                AgentStep(
+                    step_number=start_step + len(steps),
+                    thought=t(loop["thought_key"], locale),
+                    action=loop["tool"],
+                    action_input=loop["input"],
+                    observation=json.dumps(compact_payload, ensure_ascii=False)[:2000],
+                    sources=refs,
+                    data_status=data_status,
+                )
+            )
+
+        return steps
+
+    @staticmethod
+    def _data_status(payload: Dict[str, Any]) -> Dict[str, Any]:
+        status = dict(payload.get("data_status") or {})
+        status.setdefault("hit", not bool(payload.get("error")))
+        status.setdefault("source_count", len(payload.get("sources") or []))
+        status.setdefault("data_source", payload.get("data_source") or "local")
+        status.setdefault("cache_hit", bool(payload.get("cache_hit")))
+        if payload.get("fetched_at"):
+            status.setdefault("fetched_at", payload.get("fetched_at"))
+        return status
+
+    async def _chat_payload(self, messages: List[Dict[str, str]], locale: Locale) -> tuple[str, Dict[str, Any] | None]:
+        raw = await self.client.chat(messages)
+        payload = parse_tool_call(raw)
+        if payload is not None:
+            return raw, payload
+        retry_messages = [
+            *messages,
+            {"role": "assistant", "content": raw},
+            {
+                "role": "user",
+                "content": t("agent.live.json_retry", locale),
+            },
+        ]
+        retry_raw = await self.client.chat(retry_messages)
+        retry_payload = parse_tool_call(retry_raw)
+        return retry_raw, retry_payload
+
+    def _finalize(self, result: ResearchResult, live_payload: Dict[str, Any] | None = None) -> ResearchResult:
+        protocol = build_protocol_from_result(result)
+        if live_payload:
+            protocol = merge_live_protocol_fields(protocol, live_payload, locale=result.locale)
+        protocol.faithfulness = check_faithfulness(
+            result.citations,
+            result.all_sources,
+            locale=result.locale,
+        )
+        result.protocol = protocol.to_dict()
+        return result
+
+    async def run_followup(
+        self,
+        base_result: Dict[str, Any],
+        followup_question: str,
+        locale: str | Locale = Locale.ZH,
+    ) -> ResearchResult:
+        """Incremental follow-up: reuse prior sources, produce a focused mini-report.
+
+        ``base_result`` is the previous ``ResearchResult.to_dict()`` payload sent
+        by the client. We avoid re-running the heavy tool chain and instead
+        produce 1-2 lightweight reasoning steps tied to the new question.
+        """
+        loc = normalize_locale(locale)
+        company = base_result.get("company") or ""
+        prior_sources = base_result.get("all_sources") or []
+
+        return self._finalize(
+            await self._run_followup_live(company, followup_question, prior_sources, base_result, loc)
+        )
+
+    @staticmethod
+    def _source_refs_from_dicts(sources: List[Dict[str, Any]]) -> List[SourceRef]:
+        refs: List[SourceRef] = []
+        for item in sources:
+            if not isinstance(item, dict):
+                continue
+            stype = item.get("source_type") or "knowledge"
+            try:
+                source_type = SourceType(stype)
+            except ValueError:
+                source_type = SourceType.KNOWLEDGE
+            refs.append(
+                SourceRef(
+                    source_id=item.get("source_id") or "",
+                    source_type=source_type,
+                    title=item.get("title") or "",
+                    excerpt=item.get("excerpt") or "",
+                    url=item.get("url"),
+                    page=item.get("page"),
+                )
+            )
+        return refs
+
+    def _run_followup_demo(
+        self,
+        company: str,
+        followup_question: str,
+        prior_sources: List[Dict[str, Any]],
+        base_result: Dict[str, Any],
+        locale: Locale,
+    ) -> ResearchResult:
+        prior_refs = self._source_refs_from_dicts(prior_sources)
+        all_sources: Dict[str, SourceRef] = {}
+        for ref in prior_refs:
+            self._merge_source(all_sources, ref)
+
+        kb = run_tool("knowledge_query", {"query": followup_question}, locale=locale.value)
+        kb_sources: List[SourceRef] = []
+        for item in kb.get("sources", []):
+            ref = SourceRef(
+                source_id=item["source_id"],
+                source_type=SourceType(item["source_type"]),
+                title=item["title"],
+                excerpt=item["excerpt"],
+                url=item.get("url"),
+            )
+            self._merge_source(all_sources, ref)
+            kb_sources.append(ref)
+
+        prior_titles = ", ".join(
+            (s.get("title") or "")[:24] for s in prior_sources[:3] if s.get("title")
+        ) or company
+
+        synth_step = AgentStep(
+            step_number=1,
+            thought=t("agent.followup.thought.synthesize", locale, question=followup_question),
+            action="knowledge_query",
+            action_input={"query": followup_question, "scope": "prior_evidence"},
+            observation=json.dumps(
+                [
+                    {"chunk_id": c.get("chunk_id"), "text": (c.get("text") or "")[:160]}
+                    for c in (kb.get("chunks") or [])[:3]
+                ],
+                ensure_ascii=False,
+            ),
+            sources=kb_sources or prior_refs[:1],
+        )
+
+        prior_conclusion = (base_result.get("conclusion") or "").strip()
+        prior_snippet = prior_conclusion[:120] + ("…" if len(prior_conclusion) > 120 else "")
+        conclusion = t(
+            "agent.followup.conclusion",
+            locale,
+            question=followup_question,
+            company=company or "—",
+            prior=prior_snippet or t("agent.followup.no_prior", locale),
+            evidence_count=len(prior_sources),
+        )
+
+        citation_ids: List[str] = []
+        for ref in (kb_sources or [])[:2]:
+            if ref.source_id:
+                citation_ids.append(ref.source_id)
+        for src in prior_sources[:2]:
+            sid = src.get("source_id")
+            if sid and sid not in citation_ids:
+                citation_ids.append(sid)
+
+        citations = [
+            CitedClaim(
+                claim=t(
+                    "agent.followup.claim",
+                    locale,
+                    question=followup_question,
+                    titles=prior_titles,
+                ),
+                source_ids=citation_ids,
+            )
+        ]
+
+        result = ResearchResult(
+            company=company,
+            question=followup_question,
+            conclusion=conclusion,
+            steps=[synth_step],
+            citations=citations,
+            all_sources=list(all_sources.values()),
+            mode="followup_demo",
+            locale=locale.value,
+        )
+        return result
+
+    async def _run_followup_live(
+        self,
+        company: str,
+        followup_question: str,
+        prior_sources: List[Dict[str, Any]],
+        base_result: Dict[str, Any],
+        locale: Locale,
+    ) -> ResearchResult:
+        prior_refs = self._source_refs_from_dicts(prior_sources)
+        all_sources: Dict[str, SourceRef] = {}
+        for ref in prior_refs:
+            self._merge_source(all_sources, ref)
+
+        evidence_lines = []
+        for src in prior_sources[:8]:
+            title = (src.get("title") or "").strip()
+            excerpt = (src.get("excerpt") or "").strip().replace("\n", " ")[:200]
+            sid = src.get("source_id") or ""
+            if title or excerpt:
+                evidence_lines.append(f"- [{sid}] {title}: {excerpt}")
+        evidence_block = "\n".join(evidence_lines) or "(no prior evidence)"
+
+        prior_conclusion = (base_result.get("conclusion") or "").strip()
+        followup_prompt = t(
+            "agent.followup.live_prompt",
+            locale,
+            company=company,
+            prior=prior_conclusion[:600],
+            evidence=evidence_block,
+            question=followup_question,
+        )
+
+        system_prompt = get_system_prompt(locale)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": followup_prompt},
+        ]
+        completion = await self.client.acomplete(messages)
+        answer = (completion.get("content") or "").strip()
+        if not answer:
+            raise RuntimeError("Empty follow-up response from LLM")
+
+        step = AgentStep(
+            step_number=1,
+            thought=t("agent.followup.thought.live", locale, question=followup_question),
+            action="llm_followup",
+            action_input={"question": followup_question, "scope": "prior_evidence"},
+            observation=answer[:600],
+            sources=prior_refs[:4],
+        )
+
+        citation_ids = [src.get("source_id") for src in prior_sources[:3] if src.get("source_id")]
+        citations = [
+            CitedClaim(
+                claim=t(
+                    "agent.followup.claim",
+                    locale,
+                    question=followup_question,
+                    titles=", ".join((s.get("title") or "")[:24] for s in prior_sources[:3]),
+                ),
+                source_ids=[cid for cid in citation_ids if cid],
+            )
+        ]
+
+        result = ResearchResult(
+            company=company,
+            question=followup_question,
+            conclusion=answer,
+            steps=[step],
+            citations=citations,
+            all_sources=list(all_sources.values()),
+            mode="followup_live",
+            locale=locale.value,
+        )
+        return result
+
+    def _run_demo(self, company: str, question: str, locale: Locale) -> ResearchResult:
+        steps: List[AgentStep] = []
+        all_sources: Dict[str, SourceRef] = {}
+
+        def add_sources(raw_sources: List[Dict[str, Any]]) -> List[SourceRef]:
+            refs: List[SourceRef] = []
+            for item in raw_sources:
+                ref = SourceRef(
+                    source_id=item["source_id"],
+                    source_type=SourceType(item["source_type"]),
+                    title=item["title"],
+                    excerpt=item["excerpt"],
+                    url=item.get("url"),
+                    page=item.get("page"),
+                )
+                self._merge_source(all_sources, ref)
+                refs.append(ref)
+            return refs
+
+        report = run_tool(
+            "fetch_financial_report",
+            {"company_name": company},
+            locale=locale.value,
+        )
+        report_sources = add_sources(report.get("sources", []))
+        steps.append(
+            AgentStep(
+                step_number=1,
+                thought=t("agent.demo.thought.report", locale),
+                action="fetch_financial_report",
+                action_input={"company_name": company},
+                observation=json.dumps(report["highlights"], ensure_ascii=False),
+                sources=report_sources,
+            )
+        )
+
+        news_query = t("agent.demo.news_query", locale)
+        news = run_tool(
+            "search_news",
+            {"company_name": company, "query": news_query},
+            locale=locale.value,
+        )
+        news_sources = add_sources(news.get("sources", []))
+        steps.append(
+            AgentStep(
+                step_number=2,
+                thought=t("agent.demo.thought.news", locale),
+                action="search_news",
+                action_input={"company_name": company, "query": news_query},
+                observation=json.dumps(
+                    [{"title": a["title"], "sentiment": a.get("sentiment")} for a in news["articles"]],
+                    ensure_ascii=False,
+                ),
+                sources=news_sources,
+            )
+        )
+
+        kb = run_tool("knowledge_query", {"query": question}, locale=locale.value)
+        kb_sources = add_sources(kb.get("sources", []))
+        steps.append(
+            AgentStep(
+                step_number=3,
+                thought=t("agent.demo.thought.kb", locale),
+                action="knowledge_query",
+                action_input={"query": question},
+                observation=json.dumps(kb["chunks"], ensure_ascii=False),
+                sources=kb_sources,
+            )
+        )
+
+        stock_code = resolve_stock_code(company)
+        if stock_code:
+            market = run_tool(
+                "fetch_market_data",
+                {"stock_code": stock_code, "action": "quote", "company_name": company},
+                locale=locale.value,
+            )
+            if not market.get("error"):
+                market_sources = add_sources(market.get("sources", []))
+                steps.append(
+                    AgentStep(
+                        step_number=4,
+                        thought=t("agent.demo.thought.market", locale),
+                        action="fetch_market_data",
+                        action_input={"stock_code": stock_code, "action": "quote"},
+                        observation=json.dumps(
+                            {
+                                "stock_name": market.get("stock_name"),
+                                "current_price": market.get("current_price"),
+                                "change_percent": market.get("change_percent"),
+                                "pe_ratio": market.get("pe_ratio"),
+                            },
+                            ensure_ascii=False,
+                        ),
+                        sources=market_sources,
+                    )
+                )
+
+        revenue = report["highlights"]["revenue"]
+        profit = report["highlights"]["net_profit"]
+        rd = report["highlights"]["rd_expense"]
+        risk_news = [a for a in news["articles"] if a.get("sentiment") == "negative"]
+
+        conclusion = t(
+            "agent.demo.conclusion.base",
+            locale,
+            company=company,
+            revenue=revenue,
+            profit=profit,
+            rd=rd,
+        )
+        if risk_news:
+            conclusion += t(
+                "agent.demo.conclusion.risk",
+                locale,
+                count=len(risk_news),
+                title=risk_news[0]["title"],
+            )
+        else:
+            conclusion += t("agent.demo.conclusion.no_risk", locale)
+
+        citations = [
+            CitedClaim(
+                claim=t(
+                    "agent.demo.cite.revenue",
+                    locale,
+                    revenue=revenue,
+                    profit=profit,
+                ),
+                source_ids=["report:demo-tech-2023"],
+            ),
+            CitedClaim(
+                claim=t("agent.demo.cite.rd", locale),
+                source_ids=["report:demo-tech-2023"],
+            ),
+        ]
+        if risk_news:
+            citations.append(
+                CitedClaim(
+                    claim=t(
+                        "agent.demo.cite.negative",
+                        locale,
+                        title=risk_news[0]["title"],
+                    ),
+                    source_ids=[risk_news[0]["id"]],
+                )
+            )
+
+        return ResearchResult(
+            company=company,
+            question=question,
+            conclusion=conclusion,
+            steps=steps,
+            citations=citations,
+            all_sources=list(all_sources.values()),
+            mode="demo",
+            locale=locale.value,
+        )
+
+    async def _run_live(self, company: str, question: str, locale: Locale) -> ResearchResult:
+        steps: List[AgentStep] = []
+        all_sources: Dict[str, SourceRef] = {}
+        steps.extend(self._bootstrap_live_evidence(company, question, locale, all_sources))
+        steps.extend(
+            self._run_deep_search_flywheel(
+                company,
+                question,
+                locale,
+                all_sources,
+                start_step=len(steps) + 1,
+            )
+        )
+        self._ensure_live_evidence(company, all_sources)
+        messages: List[Dict[str, str]] = [
+            {"role": "system", "content": get_system_prompt(locale)},
+            {
+                "role": "user",
+                "content": t(
+                    "agent.live.user_start",
+                    locale,
+                    company=company,
+                    question=question,
+                ),
+            },
+        ]
+        if steps:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": t(
+                        "agent.live.tool_feedback",
+                        locale,
+                        observation="\n\n".join(step.observation for step in steps),
+                    ),
+                }
+            )
+
+        for _ in range(1, self.settings.max_agent_steps + 1):
+            step_idx = len(steps) + 1
+            raw, payload = await self._chat_payload(messages, locale)
+            if not payload:
+                payload = {"thought": raw, "finished": True, "conclusion": raw, "citations": []}
+
+            thought = str(payload.get("thought", ""))
+            if payload.get("finished"):
+                citations = [
+                    CitedClaim(
+                        claim=str(item.get("claim", "")),
+                        source_ids=list(item.get("source_ids", [])),
+                    )
+                    for item in payload.get("citations", [])
+                ]
+                result = ResearchResult(
+                    company=company,
+                    question=question,
+                    conclusion=str(payload.get("conclusion", "")),
+                    steps=steps,
+                    citations=citations,
+                    all_sources=list(all_sources.values()),
+                    mode="live",
+                    locale=locale.value,
+                )
+                self._ensure_live_evidence(company, all_sources)
+                return self._finalize(result, live_payload=payload)
+
+            action = str(payload.get("action", ""))
+            action_input = dict(payload.get("action_input", {}))
+            observation_payload = run_tool(action, action_input, locale=locale.value)
+
+            refs: List[SourceRef] = []
+            for item in observation_payload.get("sources", []):
+                ref = SourceRef(
+                    source_id=item["source_id"],
+                    source_type=SourceType(item["source_type"]),
+                    title=item["title"],
+                    excerpt=item["excerpt"],
+                    url=item.get("url"),
+                )
+                self._merge_source(all_sources, ref)
+                refs.append(ref)
+
+            step = AgentStep(
+                step_number=step_idx,
+                thought=thought,
+                action=action,
+                action_input=action_input,
+                observation=json.dumps(observation_payload, ensure_ascii=False)[:2000],
+                sources=refs,
+                data_status=self._data_status(observation_payload),
+            )
+            steps.append(step)
+
+            messages.append({"role": "assistant", "content": raw})
+            messages.append(
+                {
+                    "role": "user",
+                    "content": t(
+                        "agent.live.tool_feedback",
+                        locale,
+                        observation=step.observation,
+                    ),
+                }
+            )
+
+        result = ResearchResult(
+            company=company,
+            question=question,
+            conclusion=t("agent.live.max_steps", locale),
+            steps=steps,
+            citations=[],
+            all_sources=list(all_sources.values()),
+            mode="live",
+            locale=locale.value,
+        )
+        return self._finalize(result)
+
+    async def _run_demo_stream(
+        self,
+        company: str,
+        question: str,
+        locale: Locale,
+    ) -> AsyncGenerator[Dict[str, Any], None]:
+        steps: List[AgentStep] = []
+        all_sources: Dict[str, SourceRef] = {}
+        step_delay = 0.42
+
+        def collect(raw_sources: List[Dict[str, Any]]) -> List[SourceRef]:
+            refs: List[SourceRef] = []
+            for item in raw_sources:
+                ref = SourceRef(
+                    source_id=item["source_id"],
+                    source_type=SourceType(item["source_type"]),
+                    title=item["title"],
+                    excerpt=item["excerpt"],
+                    url=item.get("url"),
+                    page=item.get("page"),
+                )
+                self._merge_source(all_sources, ref)
+                refs.append(ref)
+            return refs
+
+        report = run_tool(
+            "fetch_financial_report",
+            {"company_name": company},
+            locale=locale.value,
+        )
+        step = AgentStep(
+            step_number=1,
+            thought=t("agent.demo.thought.report", locale),
+            action="fetch_financial_report",
+            action_input={"company_name": company},
+            observation=json.dumps(report["highlights"], ensure_ascii=False),
+            sources=collect(report.get("sources", [])),
+        )
+        steps.append(step)
+        yield {"type": "step", "step": step}
+        await asyncio.sleep(step_delay)
+
+        news_query = t("agent.demo.news_query", locale)
+        news = run_tool(
+            "search_news",
+            {"company_name": company, "query": news_query},
+            locale=locale.value,
+        )
+        step = AgentStep(
+            step_number=2,
+            thought=t("agent.demo.thought.news", locale),
+            action="search_news",
+            action_input={"company_name": company, "query": news_query},
+            observation=json.dumps(
+                [{"title": a["title"], "sentiment": a.get("sentiment")} for a in news["articles"]],
+                ensure_ascii=False,
+            ),
+            sources=collect(news.get("sources", [])),
+        )
+        steps.append(step)
+        yield {"type": "step", "step": step}
+        await asyncio.sleep(step_delay)
+
+        kb = run_tool("knowledge_query", {"query": question}, locale=locale.value)
+        step = AgentStep(
+            step_number=3,
+            thought=t("agent.demo.thought.kb", locale),
+            action="knowledge_query",
+            action_input={"query": question},
+            observation=json.dumps(kb["chunks"], ensure_ascii=False),
+            sources=collect(kb.get("sources", [])),
+        )
+        steps.append(step)
+        yield {"type": "step", "step": step}
+        await asyncio.sleep(step_delay)
+
+        stock_code = resolve_stock_code(company)
+        if stock_code:
+            market = run_tool(
+                "fetch_market_data",
+                {"stock_code": stock_code, "action": "quote", "company_name": company},
+                locale=locale.value,
+            )
+            if not market.get("error"):
+                step = AgentStep(
+                    step_number=4,
+                    thought=t("agent.demo.thought.market", locale),
+                    action="fetch_market_data",
+                    action_input={"stock_code": stock_code, "action": "quote"},
+                    observation=json.dumps(
+                        {
+                            "stock_name": market.get("stock_name"),
+                            "current_price": market.get("current_price"),
+                            "change_percent": market.get("change_percent"),
+                            "pe_ratio": market.get("pe_ratio"),
+                        },
+                        ensure_ascii=False,
+                    ),
+                    sources=collect(market.get("sources", [])),
+                )
+                steps.append(step)
+                yield {"type": "step", "step": step}
+                await asyncio.sleep(step_delay)
+
+        revenue = report["highlights"]["revenue"]
+        profit = report["highlights"]["net_profit"]
+        rd = report["highlights"]["rd_expense"]
+        risk_news = [a for a in news["articles"] if a.get("sentiment") == "negative"]
+
+        conclusion = t(
+            "agent.demo.conclusion.base",
+            locale,
+            company=company,
+            revenue=revenue,
+            profit=profit,
+            rd=rd,
+        )
+        if risk_news:
+            conclusion += t(
+                "agent.demo.conclusion.risk",
+                locale,
+                count=len(risk_news),
+                title=risk_news[0]["title"],
+            )
+        else:
+            conclusion += t("agent.demo.conclusion.no_risk", locale)
+
+        citations = [
+            CitedClaim(
+                claim=t("agent.demo.cite.revenue", locale, revenue=revenue, profit=profit),
+                source_ids=["report:demo-tech-2023"],
+            ),
+            CitedClaim(
+                claim=t("agent.demo.cite.rd", locale),
+                source_ids=["report:demo-tech-2023"],
+            ),
+        ]
+        if risk_news:
+            citations.append(
+                CitedClaim(
+                    claim=t("agent.demo.cite.negative", locale, title=risk_news[0]["title"]),
+                    source_ids=[risk_news[0]["id"]],
+                )
+            )
+
+        result = ResearchResult(
+            company=company,
+            question=question,
+            conclusion=conclusion,
+            steps=steps,
+            citations=citations,
+            all_sources=list(all_sources.values()),
+            mode="demo",
+            locale=locale.value,
+        )
+        yield {"type": "phase", "phase": "audit"}
+        await asyncio.sleep(0.25)
+        finalized = self._finalize(result)
+        yield {"type": "final", "result": finalized}
+
+    async def _run_live_stream(
+        self,
+        company: str,
+        question: str,
+        locale: Locale,
+    ) -> AsyncGenerator[Dict[str, Any], None]:
+        steps: List[AgentStep] = []
+        all_sources: Dict[str, SourceRef] = {}
+        bootstrap_steps = self._bootstrap_live_evidence(company, question, locale, all_sources)
+        deep_search_steps = self._run_deep_search_flywheel(
+            company,
+            question,
+            locale,
+            all_sources,
+            start_step=len(bootstrap_steps) + 1,
+        )
+        steps.extend(bootstrap_steps)
+        steps.extend(deep_search_steps)
+        self._ensure_live_evidence(company, all_sources)
+        messages: List[Dict[str, str]] = [
+            {"role": "system", "content": get_system_prompt(locale)},
+            {
+                "role": "user",
+                "content": t(
+                    "agent.live.user_start",
+                    locale,
+                    company=company,
+                    question=question,
+                ),
+            },
+        ]
+        for step in [*bootstrap_steps, *deep_search_steps]:
+            yield {"type": "step", "step": step}
+        if steps:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": t(
+                        "agent.live.tool_feedback",
+                        locale,
+                        observation="\n\n".join(step.observation for step in steps),
+                    ),
+                }
+            )
+
+        for _ in range(1, self.settings.max_agent_steps + 1):
+            step_idx = len(steps) + 1
+            yield {"type": "phase", "phase": "thinking", "step_number": step_idx}
+            raw, payload = await self._chat_payload(messages, locale)
+            if not payload:
+                payload = {"thought": raw, "finished": True, "conclusion": raw, "citations": []}
+
+            thought = str(payload.get("thought", ""))
+            if payload.get("finished"):
+                citations = [
+                    CitedClaim(
+                        claim=str(item.get("claim", "")),
+                        source_ids=list(item.get("source_ids", [])),
+                    )
+                    for item in payload.get("citations", [])
+                ]
+                result = ResearchResult(
+                    company=company,
+                    question=question,
+                    conclusion=str(payload.get("conclusion", "")),
+                    steps=steps,
+                    citations=citations,
+                    all_sources=list(all_sources.values()),
+                    mode="live",
+                    locale=locale.value,
+                )
+                self._ensure_live_evidence(company, all_sources)
+                yield {"type": "phase", "phase": "audit"}
+                finalized = self._finalize(result, live_payload=payload)
+                yield {"type": "final", "result": finalized}
+                return
+
+            action = str(payload.get("action", ""))
+            action_input = dict(payload.get("action_input", {}))
+            observation_payload = run_tool(action, action_input, locale=locale.value)
+
+            refs: List[SourceRef] = []
+            for item in observation_payload.get("sources", []):
+                ref = SourceRef(
+                    source_id=item["source_id"],
+                    source_type=SourceType(item["source_type"]),
+                    title=item["title"],
+                    excerpt=item["excerpt"],
+                    url=item.get("url"),
+                )
+                self._merge_source(all_sources, ref)
+                refs.append(ref)
+
+            step = AgentStep(
+                step_number=step_idx,
+                thought=thought,
+                action=action,
+                action_input=action_input,
+                observation=json.dumps(observation_payload, ensure_ascii=False)[:2000],
+                sources=refs,
+                data_status=self._data_status(observation_payload),
+            )
+            steps.append(step)
+            yield {"type": "step", "step": step}
+
+            messages.append({"role": "assistant", "content": raw})
+            messages.append(
+                {
+                    "role": "user",
+                    "content": t(
+                        "agent.live.tool_feedback",
+                        locale,
+                        observation=step.observation,
+                    ),
+                }
+            )
+
+        result = ResearchResult(
+            company=company,
+            question=question,
+            conclusion=t("agent.live.max_steps", locale),
+            steps=steps,
+            citations=[],
+            all_sources=list(all_sources.values()),
+            mode="live",
+            locale=locale.value,
+        )
+        yield {"type": "final", "result": self._finalize(result)}

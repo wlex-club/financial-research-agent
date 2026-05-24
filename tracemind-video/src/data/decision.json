@@ -1,0 +1,16 @@
+{
+  "rating": "watch",
+  "ratingLabel": "Watch",
+  "confidence": 0.62,
+  "indicators": [
+    "Premium wholesale price holds near RMB 2,800",
+    "Distributor inventory days under 45",
+    "Mid-premium revenue growth above 20% YoY"
+  ],
+  "risks": [
+    { "label": "regulatory", "value": 0.35 },
+    { "label": "concentration", "value": 0.42 },
+    { "label": "commercialization", "value": 0.58 },
+    { "label": "margin_pressure", "value": 0.71 }
+  ]
+}

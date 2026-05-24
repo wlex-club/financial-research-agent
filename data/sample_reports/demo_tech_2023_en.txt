@@ -1,0 +1,27 @@
+2023 Annual Report
+Prepared by: Demo Technology Co., Ltd.
+Currency: CNY
+
+I. Total Revenue: 10,234,567,890.00
+    Core business revenue: 9,800,000,000
+    Other operating revenue: 434,567,890
+II. Total Operating Costs: 8,100,200,300
+    Cost of revenue: 6,500,000,000
+    Selling expenses: 500,000,000
+    General & administrative: 300,000,000
+    R&D expenses: 800,200,300
+III. Operating Profit: 2,134,367,590
+IV. Total Profit: 2,130,000,000
+V. Net Profit: 1,650,000,000
+    Net profit attributable to parent: 1,650,000,000
+
+Balance Sheet Summary:
+Total current assets: 5,600,000,000
+Total non-current assets: 8,400,000,000
+Total assets: 14,000,000,000
+
+Total current liabilities: 3,200,000,000
+Total non-current liabilities: 2,800,000,000
+Total liabilities: 6,000,000,000
+
+Total equity: 8,000,000,000

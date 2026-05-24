@@ -1,0 +1,65 @@
+[
+  {
+    "startFrame": 0,
+    "endFrame": 116,
+    "text": "In financial research, the hard part isn't writing the report."
+  },
+  {
+    "startFrame": 154,
+    "endFrame": 222,
+    "text": "It's making every line stand up to scrutiny.",
+    "hideOverlay": true
+  },
+  {
+    "startFrame": 268,
+    "endFrame": 291,
+    "text": "TraceMind.",
+    "hideOverlay": true
+  },
+  {
+    "startFrame": 346,
+    "endFrame": 536,
+    "text": "It turns investment research into an auditable chain — every thought, every tool call—"
+  },
+  {
+    "startFrame": 568,
+    "endFrame": 623,
+    "text": "—every conclusion bound to a source."
+  },
+  {
+    "startFrame": 674,
+    "endFrame": 796,
+    "text": "You see the main thesis. You also see the alternative."
+  },
+  {
+    "startFrame": 842,
+    "endFrame": 926,
+    "text": "You see where the audit rules stop the model from overreaching."
+  },
+  {
+    "startFrame": 972,
+    "endFrame": 1055,
+    "text": "Every citation is checked against the source it came from."
+  },
+  {
+    "startFrame": 1103,
+    "endFrame": 1359,
+    "text": "Risk is layered. The decision card delivers a clear rating, a confidence, and indicators to track."
+  },
+  {
+    "startFrame": 1405,
+    "endFrame": 1609,
+    "text": "The knowledge graph connects companies, customers, and regulators into one navigable network."
+  },
+  {
+    "startFrame": 1655,
+    "endFrame": 1722,
+    "text": "Follow-up questions build on prior evidence — no starting from scratch."
+  },
+  {
+    "startFrame": 1752,
+    "endFrame": 2112,
+    "text": "Research is no longer a black box. It's a path you can walk back. TraceMind. Every judgment, traceable.",
+    "hideOverlay": true
+  }
+]
