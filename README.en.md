@@ -1,6 +1,6 @@
 # Financial Research Agent / TraceMind
 
-Standalone competition demo for **MiroMind Financial Research Agent · Investment Research**, fully isolated from Fathom / textLoom core code. UI and demo outputs support **中文 / English**.
+Standalone competition demo for **MiroMind Financial Research Agent · Investment Research**. UI and demo outputs support **中文 / English**.
 
 TraceMind is not a black-box report generator. It turns financial research into an auditable workflow: every reasoning step, tool call, cited claim, risk signal, and decision card can be traced back to explicit `source_id`s. Reviewers can inspect the evidence protocol, rule audit, faithfulness checks, competing hypotheses, and entity graph directly in the UI.
 
@@ -228,7 +228,7 @@ financial-research-agent/
 
 ## Submission Notes
 
-- Safe to publish this repo alone — no Fathom/textLoom modules included
+- Safe to publish this repo standalone
 - Reviewers care about visible reasoning traces + citation-backed conclusions
 - Add MiroMind API key in `.env` for live mode
 - Recommended demo path: run Demo Technology first, then try a registry company such as Kweichow Moutai for market data
