@@ -1,7 +1,5 @@
 # Financial Research Agent / TraceMind
 
-Standalone competition demo for **MiroMind Financial Research Agent · Investment Research**. UI and demo outputs support **中文 / English**.
-
 TraceMind is not a black-box report generator. It turns financial research into an auditable workflow: every reasoning step, tool call, cited claim, risk signal, and decision card can be traced back to explicit `source_id`s. Reviewers can inspect the evidence protocol, rule audit, faithfulness checks, competing hypotheses, and entity graph directly in the UI.
 
 > **Languages:** [中文](README.zh.md) · [English](README.md)
