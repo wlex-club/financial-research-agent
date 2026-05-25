@@ -296,12 +296,12 @@ body {
 }
 
 .brand-icon {
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: 9px;
-  background: var(--brand-gradient);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 1rem; color: #fff;
-  box-shadow: 0 4px 12px rgba(var(--accent-rgb),0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
 
