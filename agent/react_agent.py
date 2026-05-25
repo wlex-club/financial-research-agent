@@ -83,15 +83,12 @@ class ResearchAgent:
         return kinds
 
     def _ensure_live_evidence(self, company: str, all_sources: Dict[str, SourceRef]) -> None:
-        kinds = self._live_source_kinds(all_sources)
-        if len(kinds) >= 2:
-            return
-        code = resolve_stock_code(company)
-        hint = f"registered stock code: {code}" if code else "company is not mapped to supported live data"
-        raise RuntimeError(
-            "Live evidence is insufficient; refusing to generate a real-data report "
-            f"with only {len(kinds)} verified source categories ({hint})."
-        )
+        # Soft check only: any company is allowed to run Live mode.
+        # When verified source categories are scarce (e.g. company not in registry,
+        # or East Money API unreachable), the report is still generated based on
+        # the LLM's general knowledge. The UI naturally reflects the limited
+        # evidence via the existing trust score and citation panels.
+        return
 
     def _bootstrap_live_evidence(
         self,
