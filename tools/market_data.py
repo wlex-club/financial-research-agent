@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import time
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Literal, Optional
 
@@ -13,19 +14,28 @@ from agent.trace import SourceRef, SourceType
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 _TIMEOUT = httpx.Timeout(15.0, connect=10.0)
 _HEADERS = {"User-Agent": "TraceMind-FinResearch/1.0"}
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+    ),
+    "Referer": "https://www.eastmoney.com/",
+}
 _RETRY_COUNT = 2
+_EM_SEARCH_TOKEN = "D43BF722C8E33BDC906FB84D85E326E8"
 
 MarketAction = Literal["quote", "financials", "news"]
 
 
 def _load_registry() -> Dict[str, Any]:
+    """Optional manual overrides; not required for normal operation."""
     path = DATA_DIR / "company_registry.json"
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def resolve_stock_code(company_name: str) -> Optional[str]:
+def _registry_lookup(company_name: str) -> Optional[str]:
     registry = _load_registry()
     name = company_name.strip().lower()
     for key, value in registry.items():
@@ -33,6 +43,60 @@ def resolve_stock_code(company_name: str) -> Optional[str]:
         if any(c in name or name in c for c in candidates):
             code = value.get("stock_code")
             return str(code) if code else None
+    return None
+
+
+@lru_cache(maxsize=512)
+def _eastmoney_search(query: str) -> List[Dict[str, Any]]:
+    """Realtime company-name search via East Money suggest API.
+
+    Returns the raw matches list (A-share, HK, US, LSE, etc.). Cached per
+    query so repeated lookups in a single process are free.
+    """
+    query = (query or "").strip()
+    if not query:
+        return []
+    url = "https://searchapi.eastmoney.com/api/suggest/get"
+    params = {
+        "input": query,
+        "type": "14",
+        "token": _EM_SEARCH_TOKEN,
+        "count": "10",
+    }
+    try:
+        with httpx.Client(timeout=_TIMEOUT, headers=_BROWSER_HEADERS, follow_redirects=True) as client:
+            resp = client.get(url, params=params)
+            resp.raise_for_status()
+            payload = resp.json()
+    except Exception:
+        return []
+    table = payload.get("QuotationCodeTable") or {}
+    return list(table.get("Data") or [])
+
+
+def resolve_stock_code(company_name: str) -> Optional[str]:
+    """Resolve any company name (CN / EN) to a 6-digit A-share code.
+
+    Strategy:
+      1. Local registry overrides (kept for aliases and stable demo flows).
+      2. East Money search API; pick the first A-share match.
+      3. None when no A-share equivalent exists. Caller falls back to LLM
+         general knowledge — see `_ensure_live_evidence`.
+    """
+    name = (company_name or "").strip()
+    if not name:
+        return None
+
+    override = _registry_lookup(name)
+    if override:
+        return override
+
+    for item in _eastmoney_search(name):
+        if item.get("Classify") != "AStock":
+            continue
+        code = str(item.get("Code") or "").strip()
+        if len(code) == 6 and code.isdigit():
+            return code
     return None
 
 
