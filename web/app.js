@@ -989,15 +989,17 @@ function applyI18n() {
 }
 
 function renderPageTitle() {
-  if (!els.pageTitle) return;
-  if (locale === "en") {
-    els.pageTitle.innerHTML = `<span class="title-latin">TraceMind</span>`;
-    return;
+  if (els.pageTitle) {
+    if (locale === "en") {
+      els.pageTitle.innerHTML = `<span class="title-latin">TraceMind</span>`;
+    } else {
+      els.pageTitle.innerHTML = `<span class="title-cjk">研迹</span>`;
+    }
   }
-  els.pageTitle.innerHTML = `
-    <span class="title-latin">TraceMind</span>
-    <span class="title-dot">·</span>
-    <span class="title-cjk">研迹</span>`;
+  const brandEl = document.getElementById("brand-name");
+  if (brandEl) {
+    brandEl.textContent = locale === "en" ? "TraceMind" : "研迹";
+  }
 }
 
 // ── Config ────────────────────────────────────────────────────────────────────

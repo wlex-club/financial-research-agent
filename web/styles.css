@@ -3216,8 +3216,8 @@ select:focus-visible {
 
 .thinking-line {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
+  align-items: baseline;
+  gap: 0.4rem 0.7rem;
   padding: 0.32rem 0;
   border-bottom: 1px dashed rgba(255,255,255,0.05);
   opacity: 0;
@@ -3253,19 +3253,24 @@ select:focus-visible {
   font-weight: 700;
   color: var(--text-3);
   letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .tl-act {
   font-weight: 600;
   color: var(--accent);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .tl-text {
   color: var(--text-2);
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  flex: 1 1 14rem;
+  min-width: 14rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tl-meta {
@@ -3273,6 +3278,11 @@ select:focus-visible {
   color: var(--text-3);
   padding-left: 0.4rem;
   border-left: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tl-dot {
