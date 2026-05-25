@@ -297,12 +297,19 @@ body {
 
 .brand-icon {
   width: 36px;
+  min-width: 36px;
+  max-width: 36px;
   height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  aspect-ratio: 1 / 1;
   border-radius: 9px;
   object-fit: cover;
   display: block;
   box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  flex-grow: 0;
+  align-self: center;
 }
 
 .brand-name {
