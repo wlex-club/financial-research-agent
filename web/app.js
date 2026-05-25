@@ -426,7 +426,7 @@ const I18N = {
     },
   },
   en: {
-    caption: "Investment Research · Evidence Protocol · Auditable",
+    caption: "Investment Research · Auditable Evidence",
     lang_label: "Language",
     theme_label: "Theme",
     theme_violet: "Abyss Violet",
