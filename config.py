@@ -17,10 +17,6 @@ class Settings(BaseSettings):
     max_agent_steps: int = 6
     request_timeout_seconds: float = 120.0
 
-    @property
-    def use_demo_mode(self) -> bool:
-        return False
-
 
 @lru_cache
 def get_settings() -> Settings:

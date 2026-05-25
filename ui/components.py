@@ -45,9 +45,9 @@ def _sentiment_label(sentiment: str, locale: Locale) -> str:
 
 # ── Top bar (replaces hero) ───────────────────────────────────────────────────
 
-def render_topbar(locale: Locale, *, demo_mode: bool) -> None:
-    mode_class = "demo" if demo_mode else "live"
-    mode_label = t("app.mode.demo", locale) if demo_mode else t("app.mode.live", locale)
+def render_topbar(locale: Locale) -> None:
+    mode_class = "live"
+    mode_label = t("app.mode.live", locale)
     st.markdown(
         f"""
         <div class="fra-topbar">

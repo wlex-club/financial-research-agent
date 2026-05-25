@@ -36,25 +36,25 @@ SYSTEM_PROMPTS = {
   "confidence": "low|medium|high",
   "conclusion": "Markdown 研究结论，区分事实与判断",
   "citations": [
-    {"claim": "关键判断", "source_ids": ["report:demo-tech-2023"]}
+    {"claim": "关键判断", "source_ids": ["report:600519:financials"]}
   ],
   "competing_hypotheses": [
     {
       "hypothesis_id": "h-main",
       "statement": "主假设：基本面稳健",
       "confidence": "high",
-      "supporting_source_ids": ["report:demo-tech-2023"]
+      "supporting_source_ids": ["report:600519:financials"]
     },
     {
       "hypothesis_id": "h-alt",
       "statement": "备择假设：监管/客户集中度带来短期压力",
       "confidence": "medium",
-      "supporting_source_ids": ["news:demo-tech-002"]
+      "supporting_source_ids": ["news:600519:1"]
     }
   ],
   "evidence_items": [
     {
-      "source_id": "report:demo-tech-2023",
+      "source_id": "report:600519:financials",
       "relation": "supporting|contradicting|neutral",
       "source_reliability": "A|B|C|D",
       "info_credibility": "1|2|3|4|5|6",
@@ -70,7 +70,7 @@ SYSTEM_PROMPTS = {
       "from_entity_id": "entity:regulator",
       "to_entity_id": "entity:company",
       "relation_type": "regulatory_risk",
-      "source_id": "news:demo-tech-002",
+      "source_id": "news:600519:1",
       "label": "监管关注"
     }
   ]
@@ -79,7 +79,7 @@ SYSTEM_PROMPTS = {
 ## 规则
 - 禁止无 source_id 的断言
 - 必须给出至少 2 条竞争假设（主假设 + 备择假设）
-- Live 模式下必须优先使用工具返回的真实 source_id，不得引用 demo source_id 作为真实公司依据
+- 所有 source_id 必须来自工具实际返回，禁止编造或引用示例占位符
 - 最终结论必须体现 Deep Search 飞轮结果：至少说明一个支持证据、一个反证/风险证据、一个仍需跟踪的不确定性
 - 必须纳入反证或中性证据后再下结论
 - citations / evidence_items 中的 source_id 必须来自工具返回
@@ -115,7 +115,7 @@ SYSTEM_PROMPTS = {
   "finished": true,
   "confidence": "low|medium|high",
   "conclusion": "Markdown conclusion separating facts vs judgments",
-  "citations": [{"claim": "key judgment", "source_ids": ["report:demo-tech-2023"]}],
+  "citations": [{"claim": "key judgment", "source_ids": ["report:600519:financials"]}],
   "competing_hypotheses": [
     {"hypothesis_id": "h-main", "statement": "Main: stable fundamentals", "confidence": "high", "supporting_source_ids": []},
     {"hypothesis_id": "h-alt", "statement": "Alt: regulatory/customer concentration risk", "confidence": "medium", "supporting_source_ids": []}
@@ -129,7 +129,7 @@ SYSTEM_PROMPTS = {
 
 ## Rules
 - No unsupported claims
-- In Live mode, prioritize real source IDs returned by tools; do not use demo source IDs as evidence for real companies
+- All source IDs must come from actual tool outputs; never fabricate or reuse example placeholders
 - The final conclusion must reflect the Deep Search flywheel: at least one supporting evidence item, one counter-evidence/risk item, and one uncertainty to monitor
 - At least 2 competing hypotheses (main + alternative)
 - Consider contradicting/neutral evidence before concluding

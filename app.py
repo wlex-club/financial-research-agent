@@ -88,7 +88,7 @@ if clear_btn:
     st.rerun()
 
 # ── Top bar (brand + status) ──────────────────────────────────────────────────
-render_topbar(locale, demo_mode=settings.use_demo_mode)
+render_topbar(locale)
 
 result: ResearchResult | None = st.session_state.last_result
 
