@@ -374,17 +374,22 @@ MESSAGES: Dict[str, Dict[str, str]] = {
     },
     "agent.live.salvage_prompt": {
         "zh": (
-            "你是金融尽调分析师。下面是针对【{company}】关于「{question}」已收集到的证据片段（含来源 ID）。"
-            "请基于这些证据用 3–6 段中文写出一份审慎、可追溯的研究结论；"
+            "你现在是一名资深金融尽调分析师，正在为客户撰写一段叙述性的研究结论。\n"
+            "重要：本次回答必须是纯叙述性中文段落，绝对不能使用任何 JSON、不能使用 Markdown 代码块、"
+            "不能用键值对结构，回复的开头不允许出现左花括号。\n"
+            "目标公司：{company}\n研究问题：{question}\n\n"
+            "请基于下面已收集到的证据片段（含来源 ID），用 3–6 段中文写出审慎、可追溯的结论；"
             "在关键判断后用 [source_id] 形式引用来源；不要编造未出现的事实；"
-            "若证据不足以下结论，请明确说明并指出缺口。\n\n证据：\n{evidence}"
+            "若证据不足以下结论，明确说明并指出缺口。\n\n证据：\n{evidence}"
         ),
         "en": (
-            "You are a financial due-diligence analyst. Below are evidence excerpts (with source IDs) "
-            "collected for [{company}] regarding \"{question}\". "
-            "Write a cautious, traceable research conclusion in 3–6 English paragraphs based ONLY on these excerpts. "
-            "Cite sources inline using [source_id] after key claims. Do not fabricate facts not present in the excerpts. "
-            "If the evidence is insufficient, state so explicitly and identify the gaps.\n\nEvidence:\n{evidence}"
+            "You are a senior financial due-diligence analyst writing a narrative research conclusion.\n"
+            "IMPORTANT: your reply must be a plain narrative English paragraph. Do NOT use any JSON, "
+            "do NOT use Markdown code fences, do NOT use key/value structures. Your reply must not start with a left curly brace.\n"
+            "Target company: {company}\nResearch question: {question}\n\n"
+            "Using only the evidence excerpts below (with source IDs), write a cautious, traceable conclusion in 3–6 paragraphs. "
+            "Cite sources inline using [source_id] after key claims. Do not fabricate facts. "
+            "If the evidence is insufficient, say so explicitly and identify the gaps.\n\nEvidence:\n{evidence}"
         ),
     },
     "tools.report.title": {

@@ -160,6 +160,45 @@ async def check_resolve():
 
 asyncio.run(check_resolve())
 
+# ── _summarize_from_observations sanity (mock LLM) ───────────────────────────
+async def check_salvage_sanity():
+    from agent.trace import AgentStep
+    # Build a fake step so the evidence block is non-empty.
+    fake_step = AgentStep(
+        step_number=1,
+        thought="probe",
+        action="search_news",
+        action_input={"company_name": "X"},
+        observation="some evidence text",
+        sources=[],
+    )
+    bad_outputs = [
+        ('{"error":false,"message":"已按要求返回 JSON","data":null}', "JSON object reply"),
+        ("[1,2,3]", "JSON array reply"),
+        ("```json\n{\"action\":\"x\"}\n```", "fenced code reply"),
+        ("已根据你给定的 ReAct schema 完成总结：1. 输出必须是 JSON 对象。2. 必须以 { 开头。citations 字段。", "meta-leak reply"),
+    ]
+    good_output = "贵州茅台 2024 年营收同比增长 18%，主要由直销渠道驱动 [r:600519:financials]。需关注监管和反腐风险 [news:600519:1]。"
+
+    async def fake_chat(messages, *, temperature=0.2):
+        return fake_chat._next  # type: ignore[attr-defined]
+
+    original_chat = agent.client.chat
+    agent.client.chat = fake_chat
+    try:
+        for raw, label in bad_outputs:
+            fake_chat._next = raw  # type: ignore[attr-defined]
+            out = await agent._summarize_from_observations("X", "Y", [fake_step], Locale.ZH)
+            case(f"salvage rejects {label}", out == "", f"out={out!r}")
+        fake_chat._next = good_output  # type: ignore[attr-defined]
+        out = await agent._summarize_from_observations("X", "Y", [fake_step], Locale.ZH)
+        case("salvage passes through good prose", out == good_output, f"out={out[:60]!r}")
+    finally:
+        agent.client.chat = original_chat
+
+
+asyncio.run(check_salvage_sanity())
+
 # ── Report ───────────────────────────────────────────────────────────────────
 passed = sum(1 for _, ok, _ in results if ok)
 failed = sum(1 for _, ok, _ in results if not ok)

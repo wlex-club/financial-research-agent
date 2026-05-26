@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     miromind_api_key: str = ""
     miromind_base_url: str = "https://api.miromind.ai/v1"
-    miromind_model: str = "mirothinker-1-7-deepresearch-mini"
+    miromind_model: str = "mirothinker-1-7-deepresearch"
     max_agent_steps: int = 6
     request_timeout_seconds: float = 120.0
 

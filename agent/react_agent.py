@@ -483,7 +483,20 @@ class ResearchAgent:
             )
         except Exception:  # noqa: BLE001 — best-effort salvage
             return ""
-        return (text or "").strip()
+        stripped = (text or "").strip()
+        # If the model — despite explicit instructions — still wraps the
+        # answer in JSON or starts meta-describing the schema, drop the
+        # salvage and let the caller fall through to the friendly retry
+        # notice. Better to show "please retry" than another off-schema blob.
+        if not stripped:
+            return ""
+        if stripped.startswith("{") or stripped.startswith("["):
+            return ""
+        if "```" in stripped[:80]:
+            return ""
+        if self._conclusion_is_meta_leak(stripped):
+            return ""
+        return stripped
 
     def _finalize(self, result: ResearchResult, live_payload: Dict[str, Any] | None = None) -> ResearchResult:
         protocol = build_protocol_from_result(result)

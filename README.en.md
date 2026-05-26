@@ -124,7 +124,7 @@ TraceMind supports **Live research**, **real East Money market-data tools**, and
 ```bash
 MIROMIND_API_KEY=sk-...
 MIROMIND_BASE_URL=https://api.miromind.ai/v1
-MIROMIND_MODEL=mirothinker-1-7-deepresearch-mini
+MIROMIND_MODEL=mirothinker-1-7-deepresearch
 DEMO_MODE=auto   # auto | on | off
 ```
 
