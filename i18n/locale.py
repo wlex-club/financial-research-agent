@@ -328,6 +328,14 @@ MESSAGES: Dict[str, Dict[str, str]] = {
         "zh": "拉取实时行情，校验市场定价与估值指标。",
         "en": "Fetch live quote data to verify market pricing and valuation indicators.",
     },
+    "agent.live.phase.bootstrap": {
+        "zh": "建立 Live 基线 · 拉取财报 / 公告 / 行情",
+        "en": "Establishing Live baseline · fetching financials / filings / quotes",
+    },
+    "agent.live.phase.flywheel_start": {
+        "zh": "Deep Search 飞轮启动 · 反证 → 催化 → 校验",
+        "en": "Deep Search flywheel · risk → catalyst → validation",
+    },
     "agent.live.deep_search.risk": {
         "zh": "Deep Search 反证轮：围绕风险、监管、业绩下滑和估值压力扩展检索。",
         "en": "Deep Search counter-evidence loop: expand retrieval around risks, regulation, earnings downside, and valuation pressure.",
@@ -355,6 +363,29 @@ MESSAGES: Dict[str, Dict[str, str]] = {
     "agent.live.json_retry": {
         "zh": "上一条回复无法解析为约定 JSON。请只返回一个合法 JSON 对象，不要 markdown，不要解释。",
         "en": "The previous reply was not parseable as the required JSON. Return one valid JSON object only, with no markdown or explanation.",
+    },
+    "agent.live.json_retry_strict": {
+        "zh": "你下一条回复只能是一个 JSON 对象本身，前后不允许任何文字。",
+        "en": "Your next reply must be a single JSON object only — no text before or after it.",
+    },
+    "agent.live.invalid_schema": {
+        "zh": "模型未按约定 schema 返回结果（仅给出与研究无关的 JSON），已中止本次推理。请稍后重试或换一种问法。",
+        "en": "The model did not return the required ReAct schema (it returned an unrelated JSON object). The run was aborted. Please retry or rephrase the question.",
+    },
+    "agent.live.salvage_prompt": {
+        "zh": (
+            "你是金融尽调分析师。下面是针对【{company}】关于「{question}」已收集到的证据片段（含来源 ID）。"
+            "请基于这些证据用 3–6 段中文写出一份审慎、可追溯的研究结论；"
+            "在关键判断后用 [source_id] 形式引用来源；不要编造未出现的事实；"
+            "若证据不足以下结论，请明确说明并指出缺口。\n\n证据：\n{evidence}"
+        ),
+        "en": (
+            "You are a financial due-diligence analyst. Below are evidence excerpts (with source IDs) "
+            "collected for [{company}] regarding \"{question}\". "
+            "Write a cautious, traceable research conclusion in 3–6 English paragraphs based ONLY on these excerpts. "
+            "Cite sources inline using [source_id] after key claims. Do not fabricate facts not present in the excerpts. "
+            "If the evidence is insufficient, state so explicitly and identify the gaps.\n\nEvidence:\n{evidence}"
+        ),
     },
     "tools.report.title": {
         "zh": "演示科技有限公司 2023 年年度报告",

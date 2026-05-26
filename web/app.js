@@ -117,7 +117,13 @@ const I18N = {
     error_offline_message: "暂时连接不到后端服务，请检查 Wi-Fi / VPN。",
     error_offline_hint: "也可直接在侧栏点开预置公司样例，本地即时查看完整报告。",
     error_timeout_title: "请求超时",
-    error_timeout_message: "Agent 长时间未返回结果（>3 分钟），可能是 LLM 响应过慢。",
+    error_timeout_message: "Agent 长时间未返回结果（>5 分钟），可能是 LLM 响应过慢。",
+    thinking_still_working_1: "仍在思考中 · 大模型推理较深，请稍候…",
+    thinking_still_working_2: "持续生成中 · 复杂研究问题通常需要 2–4 分钟。",
+    thinking_auto_retry: "首次尝试失败，正在自动重试…",
+    thinking_phase_bootstrap: "建立 Live 基线",
+    thinking_phase_flywheel_start: "Deep Search 飞轮启动",
+    rerun_research: "重新运行",
     error_auth_title: "API 鉴权失败",
     error_auth_message: "MiroMind API key 未配置或已失效，无法调用真实模型。",
     error_auth_hint: "Live 模式需要有效的 MiroMind API key。",
@@ -488,7 +494,13 @@ const I18N = {
     error_offline_message: "Cannot reach the backend right now. Check Wi-Fi / VPN.",
     error_offline_hint: "Live mode needs the backend and network connection.",
     error_timeout_title: "Request timed out",
-    error_timeout_message: "Agent did not respond within 3 minutes — the LLM may be slow.",
+    error_timeout_message: "Agent did not respond within 5 minutes — the LLM may be slow.",
+    thinking_still_working_1: "Still thinking · the model is reasoning deeply, please wait…",
+    thinking_still_working_2: "Still working · complex research questions usually take 2–4 minutes.",
+    thinking_auto_retry: "First attempt failed, retrying automatically…",
+    thinking_phase_bootstrap: "Establishing Live baseline",
+    thinking_phase_flywheel_start: "Deep Search flywheel started",
+    rerun_research: "Rerun",
     error_auth_title: "API authentication failed",
     error_auth_message: "MiroMind API key missing or invalid; live model calls are blocked.",
     error_auth_hint: "Live mode requires a valid MiroMind API key.",
@@ -945,6 +957,7 @@ const els = {
   exportBtn: $("#export-btn"),
   pdfBtn: $("#pdf-btn"),
   shareBtn: $("#share-btn"),
+  rerunBtn: $("#rerun-btn"),
   cancelBtn: $("#cancel-btn"),
   compareOpenBtn: $("#compare-open-btn"),
   pageTitle: $(".page-title"),
@@ -3892,6 +3905,7 @@ function renderResults(result, options = {}) {
   els.reportBtn.classList.remove("hidden");
   els.pdfBtn?.classList.remove("hidden");
   els.shareBtn?.classList.remove("hidden");
+  els.rerunBtn?.classList.remove("hidden");
 }
 
 // ── Follow-up suggestions ─────────────────────────────────────────────────────
@@ -4295,7 +4309,11 @@ function cancelActiveResearch() {
   }
 }
 
-async function runResearch() {
+// Transient classes auto-retried once before surfacing the error to the user.
+const AUTO_RETRY_TYPES = new Set(["timeout", "api_unavailable", "server_error", "generic"]);
+
+async function runResearch(opts = {}) {
+  const { isAutoRetry = false } = opts;
   const company = els.company.value.trim();
   const question = els.question.value.trim();
   if (!company || !question) return;
@@ -4308,8 +4326,13 @@ async function runResearch() {
 
   const controller = new AbortController();
   activeResearchController = controller;
-  const timeoutMs = 180000;
+  const timeoutMs = 300000;
   const timer = setTimeout(() => controller.abort(new DOMException("timeout", "TimeoutError")), timeoutMs);
+  const heartbeatTimers = [
+    setTimeout(() => setThinkingStatus(t("thinking_still_working_1")), 60000),
+    setTimeout(() => setThinkingStatus(t("thinking_still_working_2")), 150000),
+  ];
+  const clearHeartbeats = () => heartbeatTimers.forEach((t) => clearTimeout(t));
   let userCancelled = false;
   let result = null;
 
@@ -4341,23 +4364,47 @@ async function runResearch() {
       await replayReasoning(result);
     }
     clearTimeout(timer);
+    clearHeartbeats();
 
     stopLoading();
     if (!result) throw new Error("Empty result");
     renderResults(result);
   } catch (err) {
     clearTimeout(timer);
+    clearHeartbeats();
     stopLoading();
     els.emptyState.classList.remove("hidden");
     const abortReason = controller.signal.reason;
     const timedOut = err?.name === "TimeoutError" || abortReason?.name === "TimeoutError";
-    if (timedOut) {
-      showError(formatFetchError(abortReason || err, "timeout"));
-    } else if (err?.name === "AbortError" || controller.signal.aborted) {
+    const userAborted = err?.name === "AbortError" || controller.signal.aborted;
+
+    if (userAborted && !timedOut) {
       userCancelled = true;
       showError(t("research_cancelled"), "info");
+    } else if (!isAutoRetry) {
+      const cls = classifyFetchError(timedOut ? abortReason || err : err, err?.message);
+      if (AUTO_RETRY_TYPES.has(cls.type)) {
+        activeResearchController = null;
+        els.runBtn.disabled = false;
+        els.runBtn.querySelector(".btn-text").classList.remove("hidden");
+        els.runBtn.querySelector(".btn-spinner").classList.add("hidden");
+        showError(t("thinking_auto_retry"), "info");
+        await new Promise((r) => setTimeout(r, 600));
+        clearError();
+        return runResearch({ isAutoRetry: true });
+      }
+      if (timedOut) {
+        showError(formatFetchError(abortReason || err, "timeout"));
+      } else {
+        showError(formatFetchError(err, err.message));
+      }
+      console.error(err);
     } else {
-      showError(formatFetchError(err, err.message));
+      if (timedOut) {
+        showError(formatFetchError(abortReason || err, "timeout"));
+      } else {
+        showError(formatFetchError(err, err.message));
+      }
       console.error(err);
     }
   } finally {
@@ -4419,6 +4466,18 @@ async function runResearchStream(body, signal, stepCounter) {
           appendThinkingLine(`<span class="tl-dot ok"></span><span class="tl-text">${esc(t("thinking_auditing"))}</span>`, "audit");
         } else if (data.phase === "thinking") {
           setThinkingStatus(`${t("thinking_planning")} · #${data.step_number || "?"}`);
+        } else if (data.phase === "bootstrap") {
+          const label = data.label || t("thinking_phase_bootstrap");
+          setThinkingStatus(label);
+          appendThinkingLine(`<span class="tl-dot"></span><span class="tl-text">▣ ${esc(label)}</span>`, "phase");
+        } else if (data.phase === "flywheel_start") {
+          const label = data.label || t("thinking_phase_flywheel_start");
+          setThinkingStatus(label);
+          appendThinkingLine(`<span class="tl-dot"></span><span class="tl-text">◎ ${esc(label)}</span>`, "phase");
+        } else if (data.phase === "flywheel") {
+          const label = data.label || `Deep Search · ${data.loop || "?"}`;
+          setThinkingStatus(label);
+          appendThinkingLine(`<span class="tl-dot"></span><span class="tl-text">→ ${esc(label)}</span>`, "phase");
         }
       } else if (event === "warning") {
         appendThinkingLine(`<span class="tl-dot ok"></span><span class="tl-text">⚠ ${esc(data.message || "")}</span>`, "audit");
@@ -4485,6 +4544,7 @@ function clearResults() {
   els.reportBtn.classList.add("hidden");
   els.pdfBtn?.classList.add("hidden");
   els.shareBtn?.classList.add("hidden");
+  els.rerunBtn?.classList.add("hidden");
   els.emptyState.classList.remove("hidden");
   updateMetrics(null);
   renderHeroDeck(null);
@@ -4669,7 +4729,18 @@ async function openPdfPreview() {
   overlay.innerHTML = renderPdfPreview(lastResult, shareUrl);
   document.body.appendChild(overlay);
 
-  const close = () => overlay.remove();
+  const prevBodyOverflow = document.body.style.overflow;
+  document.body.style.overflow = "hidden";
+  const close = () => {
+    overlay.remove();
+    document.body.style.overflow = prevBodyOverflow;
+    document.removeEventListener("keydown", onKey);
+  };
+  const onKey = (event) => {
+    if (event.key === "Escape") close();
+  };
+  document.addEventListener("keydown", onKey);
+
   overlay.querySelector('[data-action="close-pdf"]')?.addEventListener("click", close);
   overlay.querySelector('[data-action="print-pdf"]')?.addEventListener("click", () => {
     overlay.classList.add("printing");
@@ -4679,6 +4750,7 @@ async function openPdfPreview() {
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) close();
   });
+  requestAnimationFrame(() => overlay.scrollTo({ top: 0 }));
 }
 
 function renderPdfPreview(result, shareUrl) {
@@ -5520,6 +5592,10 @@ document.addEventListener("DOMContentLoaded", () => {
   els.reportBtn.addEventListener("click", exportMarkdownReport);
   els.pdfBtn?.addEventListener("click", openPdfPreview);
   els.shareBtn?.addEventListener("click", copyShareLink);
+  els.rerunBtn?.addEventListener("click", () => {
+    if (els.runBtn?.disabled) return;
+    runResearch();
+  });
   els.cancelBtn?.addEventListener("click", cancelActiveResearch);
   els.compareOpenBtn?.addEventListener("click", openCompareDrawer);
   installKeyboardShortcuts();

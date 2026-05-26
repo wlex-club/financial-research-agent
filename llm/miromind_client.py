@@ -60,19 +60,74 @@ class MiroMindClient:
         return data["choices"][0]["message"]["content"]
 
 
-def parse_tool_call(text: str) -> Optional[Dict[str, Any]]:
-    """Parse a JSON tool call block from model output."""
-    fenced = re.search(r"```json\s*(\{.*?\})\s*```", text, re.DOTALL)
-    if fenced:
-        try:
-            return json.loads(fenced.group(1))
-        except json.JSONDecodeError:
-            pass
+_SCHEMA_KEYS = ("action", "conclusion", "finished", "thought")
 
-    brace = re.search(r"\{[^{}]*\"action\"[^{}]*\}", text, re.DOTALL)
-    if brace:
+
+def _looks_like_react_payload(data: Any) -> bool:
+    """Return True if the parsed object resembles our ReAct schema."""
+    if not isinstance(data, dict):
+        return False
+    return any(key in data for key in _SCHEMA_KEYS)
+
+
+def _extract_balanced_json_objects(text: str) -> List[str]:
+    """Return JSON-object substrings extracted by brace-balancing.
+
+    The earlier regex required an `"action"` key, which silently dropped
+    schema-compliant finished payloads (they contain `conclusion` instead).
+    Brace-balancing is also resilient to nested braces inside string values.
+    """
+    candidates: List[str] = []
+    depth = 0
+    start = -1
+    in_string = False
+    escape = False
+    for idx, ch in enumerate(text):
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+            continue
+        if ch == "{":
+            if depth == 0:
+                start = idx
+            depth += 1
+        elif ch == "}" and depth > 0:
+            depth -= 1
+            if depth == 0 and start >= 0:
+                candidates.append(text[start : idx + 1])
+                start = -1
+    return candidates
+
+
+def parse_tool_call(text: str) -> Optional[Dict[str, Any]]:
+    """Parse a JSON ReAct payload from model output.
+
+    Accepts both fenced and bare JSON objects. A candidate is accepted only
+    if it contains at least one known schema key (action / conclusion /
+    finished / thought) so unrelated JSON like ``{"valid": true}`` is not
+    mistaken for a final answer.
+    """
+    fenced_matches = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
+    for block in fenced_matches:
         try:
-            return json.loads(brace.group(0))
+            data = json.loads(block)
         except json.JSONDecodeError:
-            return None
+            continue
+        if _looks_like_react_payload(data):
+            return data
+
+    for block in _extract_balanced_json_objects(text):
+        try:
+            data = json.loads(block)
+        except json.JSONDecodeError:
+            continue
+        if _looks_like_react_payload(data):
+            return data
     return None
