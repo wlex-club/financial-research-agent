@@ -117,9 +117,10 @@ const I18N = {
     error_offline_message: "暂时连接不到后端服务，请检查 Wi-Fi / VPN。",
     error_offline_hint: "也可直接在侧栏点开预置公司样例，本地即时查看完整报告。",
     error_timeout_title: "请求超时",
-    error_timeout_message: "Agent 长时间未返回结果（>5 分钟），可能是 LLM 响应过慢。",
+    error_timeout_message: "Agent 长时间未返回结果（>10 分钟），可能是 LLM 响应过慢。",
     thinking_still_working_1: "仍在思考中 · 大模型推理较深，请稍候…",
-    thinking_still_working_2: "持续生成中 · 复杂研究问题通常需要 2–4 分钟。",
+    thinking_still_working_2: "持续生成中 · 复杂研究问题通常需要 3–7 分钟。",
+    thinking_still_working_3: "深度推理中 · 已接近 7 分钟，模型仍在生成结论…",
     thinking_auto_retry: "首次尝试失败，正在自动重试…",
     thinking_phase_bootstrap: "建立 Live 基线",
     thinking_phase_flywheel_start: "Deep Search 飞轮启动",
@@ -494,9 +495,10 @@ const I18N = {
     error_offline_message: "Cannot reach the backend right now. Check Wi-Fi / VPN.",
     error_offline_hint: "Live mode needs the backend and network connection.",
     error_timeout_title: "Request timed out",
-    error_timeout_message: "Agent did not respond within 5 minutes — the LLM may be slow.",
+    error_timeout_message: "Agent did not respond within 10 minutes — the LLM may be slow.",
     thinking_still_working_1: "Still thinking · the model is reasoning deeply, please wait…",
-    thinking_still_working_2: "Still working · complex research questions usually take 2–4 minutes.",
+    thinking_still_working_2: "Still working · complex research questions usually take 3–7 minutes.",
+    thinking_still_working_3: "Deep reasoning · nearly 7 minutes in, the model is still generating…",
     thinking_auto_retry: "First attempt failed, retrying automatically…",
     thinking_phase_bootstrap: "Establishing Live baseline",
     thinking_phase_flywheel_start: "Deep Search flywheel started",
@@ -4326,11 +4328,12 @@ async function runResearch(opts = {}) {
 
   const controller = new AbortController();
   activeResearchController = controller;
-  const timeoutMs = 300000;
+  const timeoutMs = 600000;
   const timer = setTimeout(() => controller.abort(new DOMException("timeout", "TimeoutError")), timeoutMs);
   const heartbeatTimers = [
-    setTimeout(() => setThinkingStatus(t("thinking_still_working_1")), 60000),
-    setTimeout(() => setThinkingStatus(t("thinking_still_working_2")), 150000),
+    setTimeout(() => setThinkingStatus(t("thinking_still_working_1")), 90000),
+    setTimeout(() => setThinkingStatus(t("thinking_still_working_2")), 240000),
+    setTimeout(() => setThinkingStatus(t("thinking_still_working_3")), 420000),
   ];
   const clearHeartbeats = () => heartbeatTimers.forEach((t) => clearTimeout(t));
   let userCancelled = false;
