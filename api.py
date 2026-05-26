@@ -199,25 +199,54 @@ def _serialize_event(ev: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+_SSE_KEEPALIVE_INTERVAL = 25  # seconds — keeps Railway / Nginx gateway alive
+
+
 @app.post("/api/research/stream")
 async def research_stream(payload: ResearchRequest) -> StreamingResponse:
     agent = ResearchAgent()
 
     async def event_stream() -> AsyncGenerator[str, None]:
+        # Wrap the agent generator in a queue so we can interleave keepalive
+        # pings while waiting for the (slow) LLM to respond.
+        queue: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue()
+
+        async def _produce() -> None:
+            try:
+                async for ev in agent.run_stream(
+                    payload.company,
+                    payload.question,
+                    locale=payload.locale,
+                ):
+                    await queue.put(ev)
+            except Exception as exc:  # noqa: BLE001
+                await queue.put(
+                    {"type": "error", "message": f"{type(exc).__name__}: {exc}"}
+                )
+            finally:
+                await queue.put(None)  # sentinel
+
+        producer = asyncio.create_task(_produce())
         try:
-            async for ev in agent.run_stream(
-                payload.company,
-                payload.question,
-                locale=payload.locale,
-            ):
+            while True:
+                try:
+                    ev = await asyncio.wait_for(
+                        queue.get(), timeout=_SSE_KEEPALIVE_INTERVAL
+                    )
+                except asyncio.TimeoutError:
+                    # No event in the window — send a comment ping to keep
+                    # the gateway / proxy connection alive.
+                    yield ": ping\n\n"
+                    continue
+                if ev is None:
+                    break  # producer finished
                 serialized = _serialize_event(ev)
                 event_name = serialized.get("type", "message")
                 yield _format_sse(event_name, serialized)
-        except Exception as exc:  # noqa: BLE001
-            yield _format_sse(
-                "error",
-                {"type": "error", "message": f"{type(exc).__name__}: {exc}"},
-            )
+                if event_name == "error":
+                    break
+        finally:
+            producer.cancel()
 
     return StreamingResponse(
         event_stream(),
